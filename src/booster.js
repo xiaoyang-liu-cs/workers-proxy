@@ -6,7 +6,7 @@ let config = {
 
     firewall: {
         blockedRegion: ['CN', 'KP', 'SY', 'PK', 'CU'],
-        blockedIPAddress: ['0.0.0.0', '127.0.0.1'],
+        blockedIPAddress: [],
         scrapeShield: true
     },
 
@@ -69,19 +69,21 @@ async function fetchAndApply(request) {
     requestURL.host = upstreamURL.host;
     requestURL.pathname = upstreamURL.pathname + requestURL.pathname;
 
-    let fetchedResponse = await fetch(requestURL, {
-        cf: {
-            cacheEverything: config.optimization.cacheEverything,
-            cacheTtl: config.optimization.cacheTtl,
-            mirage: config.optimization.mirage,
-            polish: config.optimization.polish,
-            minify: config.optimization.minify,
-            scrapeShield: config.firewall.scrapeShield
-        },
-        method: request.method,
-        headers: request.headers,
-        body: request.body
-    });
+    let fetchedResponse = await fetch(
+        new Request(requestURL, {
+            cf: {
+                cacheEverything: config.optimization.cacheEverything,
+                cacheTtl: config.optimization.cacheTtl,
+                mirage: config.optimization.mirage,
+                polish: config.optimization.polish,
+                minify: config.optimization.minify,
+                scrapeShield: config.firewall.scrapeShield
+            },
+            method: request.method,
+            headers: request.headers,
+            body: request.body
+        })
+    );
 
     let modifiedResponseHeaders = new Headers(fetchedResponse.headers);
     if (modifiedResponseHeaders.has("x-pjax-url")) {

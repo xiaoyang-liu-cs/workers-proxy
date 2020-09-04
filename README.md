@@ -1,141 +1,115 @@
-![](https://repository-images.githubusercontent.com/102965805/c78b5880-7f54-11ea-9e8c-5ec65c48633c)
+# booster.js
 
-# Workers-Proxy
+<div align="center">
 
-[![LICENSE](https://img.shields.io/github/license/Berkeley-Reject/Workers-Proxy.svg?style=flat-square)](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/LICENSE)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/Berkeley-Reject/Workers-Proxy?style=flat-square)](https://github.com/Berkeley-Reject/Workers-Proxy/issues)
-[![GitHub stars](https://img.shields.io/github/stars/Berkeley-Reject/Workers-Proxy?style=flat-square)](https://github.com/Berkeley-Reject/Workers-Proxy/stargazers)
+[![GitHub stars](https://img.shields.io/github/stars/xiaoyang-liu-cs/booster.js?style=for-the-badge)](https://github.com/xiaoyang-liu-cs/booster.js/stargazers)
+[![LICENSE](https://img.shields.io/github/forks/xiaoyang-liu-cs/booster.js.svg?style=for-the-badge)](https://github.com/xiaoyang-liu-cs/booster.js/network/members)
+[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/xiaoyang-liu-cs/booster.js?style=for-the-badge)](https://github.com/xiaoyang-liu-cs/booster.js/issues)
 
-[Issues](https://github.com/Berkeley-Reject/Workers-Proxy/issues) |
-[Pull requests](https://github.com/Berkeley-Reject/Workers-Proxy/pulls) | 
-[Contributors](https://github.com/Berkeley-Reject/Workers-Proxy/graphs/contributors)
+[![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/winter-is-coming.svg)](https://forthebadge.com)
 
-</p>
+[Examples](#examples)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+[Releases](https://github.com/xiaoyang-liu-cs/booster.js/releases)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+[Font Patcher](#font-patcher)&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;
+
+</div>
 
 ## Introduction
 
-Workers-Proxy is a lightweight Javascript [Reverse Proxy](https://www.cloudflare.com/learning/cdn/glossary/reverse-proxy/) based on [Cloudflare Workers](https://workers.cloudflare.com/).
+**booster.js** is a speed and performance optimizier for your website, delivering fast web experiences to users. Built with Cloudflare Workers, it caches static assets on the high performance global network, applies optimizations to web pages, and guards your website from scrapers or malicious attacks.
 
-Users could deploy the reverse proxy on Cloudflare's global network without setting up virtual private servers and configuring Nginx or Apache.
+- Speed: Deliver your website with Cloudflare’s global network, which is milliseconds away from virtually every Internet user.
+- Network: Set up HTTP/2, TLS 1.3, HTTPS (Free SSL Certificate), and IPv6 for your website.
+- Optimization: Minify JavaScript codes, compress images, cache static assets.
+- Firewall: Block traffics from specific IP addresses, regions, or known scrapers.
+- Routes: Serve different webpages to visitors based on their region or devices.
+- Serverless: No virtual machines, no servers, and no containers to maintain.
+- Todo: Load balancer, HTMLRewriter, and advanced routing rules.
 
-### Features
+<p align="center">
+  <img src="./.github/img/demo.png" alt="Size Limit CLI" width="738">
+</p>
 
-* Build mirror websites
-* Improve loading speed with Cloudflare's global network
-* Increase security (Hide IP addresses of websites)
-* Block specific areas or IP addresses
-* Redirect mobile users to different web pages
+## Build and Deploy
 
-## Demo
+### Deploy with Wrangler
 
-[GitHub](https://cdn.reverse-proxy.live) (This demo may not be available in specific regions.)
+1. [Install Wrangler](https://github.com/cloudflare/wrangler#installation)
 
-[University of California, Los Angeles (UCLA)](https://ucla.reverse-proxy.live)
-
-[Python Documentation](https://python.reverse-proxy.live)
-
-
-## Getting Started
-
-### Build and Deploy
-
-#### Deploy with Wrangler
-
-1. [Install Wrangler.](https://github.com/cloudflare/wrangler#installation)
-
-2. Generate a new project.
+2. Generate a new project
 
 ```
-wrangler generate my-workers-proxy https://github.com/Berkeley-Reject/Workers-Proxy
+wrangler generate booster https://github.com/Berkeley-Reject/Workers-Proxy
 ```
 
-3. [Configure](https://developers.cloudflare.com/workers/quickstart/#configure) your project's `wrangler.toml` file to prepare your project for deployment.
+3. [Configure](https://developers.cloudflare.com/workers/quickstart/#configure) `wrangler.toml` to prepare your project for deployment
 
 ```
 wrangler config
 ```
 
-4. Build and deploy on Cloudflare Workers.
+4. Build and deploy on Cloudflare Workers
 
 ```
 wrangler build
 wrangler publish
 ```
 
-#### Deploy manually
+### Deploy manually
 
 1. Navigate to [Cloudflare Workers](https://workers.cloudflare.com), register or sign in your Cloudflare account, and set custom subdomain for workers, and create a new Worker.
 
-2. Customize '[src/index.js](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/src/index.js)', paste the code into Cloudflare online editor to replace the default one.
+2. Customize [src/index.js](https://github.com/xiaoyang-liu-cs/booster.js/blob/master/src/index.js), paste the code into Cloudflare online editor to replace the default one.
 
-3. Change name of your Worker, save and deploy it, and check whether its performance fulfills your demand.
+3. Change the name of your Worker, save and deploy the code.
 
 ### Bind to Custom Domain
 
-1. Check whether your domain is currently under Cloudflare's protection.
+1. Add your domain to Cloudflare.
 
-2. Navigate to the dashboard of your domain, select 'Workers' page, and click on 'Add Route'.
+2. Navigate to the dashboard, select 'Workers' page, and click on 'Add Route'.
 
-3. Type `https://<domain_name>/*` in `Route` and select the Worker you created previously.
+3. Type `https://<domain_name>/*` in `Route` and select the Worker you've created.
 
-4. Add a CNAME DNS record for your custom domain. Concretely, enter the subdomain (or '@' for root) in the 'Name' field, enter the **second level domain** of your workers in the 'Target' field, and set 'Proxy status' to 'Proxied'.
+4. Add a CNAME DNS record for your custom domain. Input the subdomain (Example: `@` or `www`) in the 'Name' field, input the **second level domain** of your workers (Example: `readme.workers.dev`) in the 'Target' field, and then set 'Proxy status' to 'Proxied'. 
 
-### Customize index.js
+## Config
 
-Basically, there are a few constants on the top of the 'index.js' file.
+<p align="center">
+  <img src="./.github/img/config.png" alt="Size Limit CLI" width="738">
+</p>
 
-To customize your own Workers-Proxy Service, you should edit these constants according to your demands.
 
-```
-// Website you intended to retrieve for users.
-const upstream = 'www.google.com'
+`basic`
+- `upstream`: Protocol, Domain, Port (Optional), Path (Optional). Example: `https://www.math.ucla.edu/~tao/`
+- `mobileRedirect`: Automatically redirect mobile device visitors to a mobile-optimized website.
 
-// Custom pathname for the upstream website.
-const upstream_path = '/'
+`firewall`
+- `blockedRegion`: Block visitors from specific regions. Full list of codes: [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
+- `blockedIPAddress`: Block visitors from specific IP Address.
+- `scrapeShield`: Discover, detect, and deter content scraping. Reference: [Introducing ScrapeShield](https://blog.cloudflare.com/introducing-scrapeshield-discover-defend-dete/)
 
-// Website you intended to retrieve for users using mobile devices.
-const upstream_mobile = 'www.google.com'
+`routes`: Map country/region codes to specific upstream. Full list of codes: [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) Example:
 
-// Countries and regions where you wish to suspend your service.
-const blocked_region = ['CN', 'KP', 'SY', 'PK', 'CU']
-
-// IP addresses which you wish to block from using your service.
-const blocked_ip_address = ['0.0.0.0', '127.0.0.1']
-
-// Whether to use HTTPS protocol for upstream address.
-const https = true
-
-// Whether to disable cache.
-const disable_cache = false
-
-// Replace texts.
-const replace_dict = {
-    '$upstream': '$custom_domain',
-    '//google.com': ''
+```js
+routes: {
+    FR: 'https://www.google.fr/',
+    CA: 'https://www.google.ca/'
 }
 ```
 
-### Example Configurations
+`optimization`
+- `cacheEverything`: Forces Cloudflare to cache the response for this request, regardless of the response headers.
+- `cacheTtl`: Forces Cloudflare to cache the response for this request with specific TTL, regardless of the response headers.
+- `mirage`: Detects screen size and connection speed to optimally deliver images for the current browser window.
+- `polish`: Automatically optimizes the images on your site. The possible values are `lossy`, `lossless` or `off`. Reference: [Introducing Polish](https://blog.cloudflare.com/introducing-polish-automatic-image-optimizati/)
+- `minify`: Removes unnecessary characters from JavaScript, CSS, and HTML files.
 
-* [Google](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/google)
-* [Google Scholars](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/google-scholar)
-* [Github](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/github)
-* [Wikipedia](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/wikipedia)
-* [Wikipedia (Chinese)](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/wikipedia-zh)
-* [The New York Times](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/nytimes)
-* [Pornhub](https://github.com/Berkeley-Reject/Workers-Proxy/blob/master/examples/pornhub)
+### Examples
 
-### Websites with Multiple Domains
-
-If the website uses another domain name to serve static resources, users could deploy multiple Workers-Proxy and configure text replacement.
-
-1. **www.google.com** serve static resources on **www.gstatic.com**
-2. Deploy **Workers-Proxy A** to proxy **www.gstatic.com**
-3. Deploy **Workers-Proxy B** to proxy **www.google.com**
-4. Configure text replacement for **Workers-Proxy B**:
-```
-const replace_dict = {
-    '$upstream': '$custom_domain',
-    'www.gstatic.com': '<Domain name of Workers-Proxy A>'
-}
-```
+| Upstream | Config | Demo |
+|-|-|-|
+| [Google](https://www.google.com) | [examples/google.js](examples/google.js) | N/A |
+| [Wikipedia](https://en.wikipedia.org) | [examples/wikipedia.js](examples/wikipedia.js) | [https://booster.readme.workers.dev](https://booster.readme.workers.dev) |
