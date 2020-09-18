@@ -1,4 +1,4 @@
-![Header](./.github/img/header.png)
+[![Header](./.github/img/header.png)](https://github.com/xiaoyang-liu-cs/booster.js)
 
 <div align="center">
 
@@ -27,7 +27,7 @@
 - Serverless: No virtual machines, no servers, and no containers to maintain.
 - Todo: Load balancer, HTMLRewriter, and advanced routing rules.
 
-![Demo](./.github/img/demo.png)
+[![Demo](./.github/img/demo.png)](https://github.com/xiaoyang-liu-cs/booster.js)
 
 ## Build and Deploy
 
@@ -58,7 +58,7 @@ wrangler publish
 
 1. Navigate to [Cloudflare Workers](https://workers.cloudflare.com), register or sign in your Cloudflare account, and set custom subdomain for workers, and create a new Worker.
 
-2. Customize [src/index.js](https://github.com/xiaoyang-liu-cs/booster.js/blob/master/src/index.js), paste the code into Cloudflare online editor to replace the default one.
+2. Customize [src/booster.js](https://github.com/xiaoyang-liu-cs/booster.js/blob/master/src/booster.js), paste the code into Cloudflare online editor to replace the default one.
 
 3. Change the name of your Worker, save and deploy the code.
 
@@ -74,7 +74,7 @@ wrangler publish
 
 ## Config
 
-![Config](./.github/img/config.png)
+[![Config](./.github/img/config.png)](https://github.com/xiaoyang-liu-cs/booster.js)
 
 `basic`
 - `upstream`: Protocol, Domain, Port (Optional), Path (Optional). Example: `https://www.math.ucla.edu/~tao/`
