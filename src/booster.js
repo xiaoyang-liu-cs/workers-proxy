@@ -45,7 +45,7 @@ async function fetchAndApply(request) {
                 status: 403
             }
         );
-    } else if (ipAddress !== '' && config.firewall.blockedRegion.includes(ipAddress)) {
+    } else if (ipAddress !== '' && config.firewall.blockedIPAddress.includes(ipAddress)) {
         return new Response(
             'Access denied: Your IP address is blocked by booster.js.',
             {
