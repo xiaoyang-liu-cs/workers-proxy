@@ -126,7 +126,6 @@ async function fetchAndApply(request) {
   );
 }
 
-// eslint-disable-next-line no-restricted-globals
 addEventListener('fetch', (event) => {
   event.respondWith(fetchAndApply(event.request));
 });
