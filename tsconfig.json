@@ -3,6 +3,7 @@
     "outDir": "./dist",
     "module": "esnext",
     "target": "esnext",
+    "moduleResolution": "node",
     "lib": [
       "esnext",
       "webworker"
@@ -13,11 +14,11 @@
     "alwaysStrict": true,
     "strict": true,
     "preserveConstEnums": true,
-    "moduleResolution": "node",
     "sourceMap": true,
     "esModuleInterop": true,
     "noImplicitReturns": true,
     "noUnusedLocals": true,
+    "declaration": true,
   },
   "include": [
     "src/*.ts",
