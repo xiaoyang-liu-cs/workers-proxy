@@ -1,7 +1,8 @@
 import { isMobile } from './utils';
+import { Configuration } from './types';
 
 class RocketBooster {
-  constructor(config) {
+  constructor(config: Configuration) {
     this.config = config;
   }
 
