@@ -12,10 +12,12 @@ export interface OriginOptions {
   weight?: number;
 }
 
+export type FirewallFields = 'country' | 'continent' | 'asn' | 'ip' | 'hostname' | 'user-agent';
+export type FirewallOperators = 'equal' | 'not equal' | 'greater' | 'less' | 'in' | 'not in' | 'contain' | 'not contain';
 export interface FirewallOptions {
-  action: 'block' | 'allow';
-  field: 'country' | 'continent' | 'asn' | 'ip' | 'hostname' | 'user-agent';
-  value: string | string[] | RegExp | RegExp[];
+  field: FirewallFields;
+  operator: FirewallOperators;
+  value: string | string[] | number | number[];
 }
 
 export interface CORSOptions {

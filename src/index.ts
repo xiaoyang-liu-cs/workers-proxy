@@ -2,101 +2,103 @@ import { isMobile } from './utils';
 import { Configuration } from './types';
 
 class RocketBooster {
+  config: Configuration;
+
   constructor(config: Configuration) {
     this.config = config;
   }
 
   async apply(request: Request): Response {
-    const config = this.config;
-    const region = request.headers.get('cf-ipcountry') || '';
-    const ipAddress = request.headers.get('cf-connecting-ip') || '';
-    const userAgent = request.headers.get('user-agent') || '';
+    
+  //   const region = request.headers.get('cf-ipcountry') || '';
+  //   const ipAddress = request.headers.get('cf-connecting-ip') || '';
+  //   const userAgent = request.headers.get('user-agent') || '';
 
-    if (region !== '' && config.firewall.blockedRegion.includes(region.toUpperCase())) {
-      return new Response(
-        'Access denied: booster.js is not available in your region.',
-        {
-          status: 403,
-        },
-      );
-    } if (ipAddress !== '' && config.firewall.blockedIPAddress.includes(ipAddress)) {
-      return new Response(
-        'Access denied: Your IP address is blocked by booster.js.',
-        {
-          status: 403,
-        },
-      );
-    }
+  //   if (region !== '' && this.config.firewall.blockedRegion.includes(region.toUpperCase())) {
+  //     return new Response(
+  //       'Access denied: booster.js is not available in your region.',
+  //       {
+  //         status: 403,
+  //       },
+  //     );
+  //   } if (ipAddress !== '' && this.config.firewall.blockedIPAddress.includes(ipAddress)) {
+  //     return new Response(
+  //       'Access denied: Your IP address is blocked by booster.js.',
+  //       {
+  //         status: 403,
+  //       },
+  //     );
+  //   }
 
-    const requestURL = new URL(request.url);
-    let upstreamURL = null;
+  //   const requestURL = new URL(request.url);
+  //   let upstreamURL = null;
 
-    if (userAgent && isMobile(userAgent) === true) {
-      upstreamURL = new URL(config.basic.mobileRedirect);
-    } else if (region && region.toUpperCase() in config.routes) {
-      upstreamURL = new URL(config.routes[region.toUpperCase()]);
-    } else {
-      upstreamURL = new URL(config.basic.upstream);
-    }
+  //   if (userAgent && isMobile(userAgent) === true) {
+  //     upstreamURL = new URL(this.config.basic.mobileRedirect);
+  //   } else if (region && region.toUpperCase() in this.config.routes) {
+  //     upstreamURL = new URL(this.config.routes[region.toUpperCase()]);
+  //   } else {
+  //     upstreamURL = new URL(this.config.basic.upstream);
+  //   }
 
-    requestURL.protocol = upstreamURL.protocol;
-    requestURL.host = upstreamURL.host;
-    requestURL.pathname = upstreamURL.pathname + requestURL.pathname;
+  //   requestURL.protocol = upstreamURL.protocol;
+  //   requestURL.host = upstreamURL.host;
+  //   requestURL.pathname = upstreamURL.pathname + requestURL.pathname;
 
-    let newRequest;
-    if (request.method === 'GET' || request.method === 'HEAD') {
-      newRequest = new Request(requestURL, {
-        cf: {
-          cacheEverything: config.optimization.cacheEverything,
-          cacheTtl: config.optimization.cacheTtl,
-          mirage: config.optimization.mirage,
-          polish: config.optimization.polish,
-          minify: config.optimization.minify,
-          scrapeShield: config.firewall.scrapeShield,
-        },
-        method: request.method,
-        headers: request.headers,
-      });
-    } else {
-      const requestBody = await request.text();
-      newRequest = new Request(requestURL, {
-        cf: {
-          cacheEverything: config.optimization.cacheEverything,
-          cacheTtl: config.optimization.cacheTtl,
-          mirage: config.optimization.mirage,
-          polish: config.optimization.polish,
-          minify: config.optimization.minify,
-          scrapeShield: config.firewall.scrapeShield,
-        },
-        method: request.method,
-        headers: request.headers,
-        body: requestBody,
-      });
-    }
+  //   let newRequest;
+  //   if (request.method === 'GET' || request.method === 'HEAD') {
+  //     newRequest = new Request(requestURL, {
+  //       cf: {
+  //         cacheEverything: this.config.optimization.cacheEverything,
+  //         cacheTtl: this.config.optimization.cacheTtl,
+  //         mirage: this.config.optimization.mirage,
+  //         polish: this.config.optimization.polish,
+  //         minify: this.config.optimization.minify,
+  //         scrapeShield: this.config.firewall.scrapeShield,
+  //       },
+  //       method: request.method,
+  //       headers: request.headers,
+  //     });
+  //   } else {
+  //     const requestBody = await request.text();
+  //     newRequest = new Request(requestURL, {
+  //       cf: {
+  //         cacheEverything: this.config.optimization.cacheEverything,
+  //         cacheTtl: this.config.optimization.cacheTtl,
+  //         mirage: this.config.optimization.mirage,
+  //         polish: this.config.optimization.polish,
+  //         minify: this.config.optimization.minify,
+  //         scrapeShield: this.config.firewall.scrapeShield,
+  //       },
+  //       method: request.method,
+  //       headers: request.headers,
+  //       body: requestBody,
+  //     });
+  //   }
 
-    const fetchedResponse = await fetch(newRequest);
+  //   const fetchedResponse = await fetch(newRequest);
 
-    const modifiedResponseHeaders = new Headers(fetchedResponse.headers);
-    if (modifiedResponseHeaders.has('x-pjax-url')) {
-      const pjaxURL = new URL(modifiedResponseHeaders.get('x-pjax-url'));
-      pjaxURL.protocol = requestURL.protocol;
-      pjaxURL.host = requestURL.host;
-      pjaxURL.pathname = pjaxURL.pathname.replace(requestURL.pathname, '/');
+  //   const modifiedResponseHeaders = new Headers(fetchedResponse.headers);
+  //   if (modifiedResponseHeaders.has('x-pjax-url')) {
+  //     const pjaxURL = new URL(modifiedResponseHeaders.get('x-pjax-url'));
+  //     pjaxURL.protocol = requestURL.protocol;
+  //     pjaxURL.host = requestURL.host;
+  //     pjaxURL.pathname = pjaxURL.pathname.replace(requestURL.pathname, '/');
 
-      modifiedResponseHeaders.set(
-        'x-pjax-url',
-        pjaxURL.href,
-      );
-    }
+  //     modifiedResponseHeaders.set(
+  //       'x-pjax-url',
+  //       pjaxURL.href,
+  //     );
+  //   }
 
-    return new Response(
-      fetchedResponse.body,
-      {
-        headers: modifiedResponseHeaders,
-        status: fetchedResponse.status,
-        statusText: fetchedResponse.statusText,
-      },
-    );
+  //   return new Response(
+  //     fetchedResponse.body,
+  //     {
+  //       headers: modifiedResponseHeaders,
+  //       status: fetchedResponse.status,
+  //       statusText: fetchedResponse.statusText,
+  //     },
+  //   );
   }
 }
 

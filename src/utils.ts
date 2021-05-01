@@ -3,4 +3,11 @@ const isMobile = (userAgent: string): boolean => {
   return agents.some((agent) => userAgent.indexOf(agent) > 0);
 };
 
-export { isMobile };
+const createResponse = (
+  body: string,
+  status: number,
+): Response => new Response(body, {
+  status,
+});
+
+export { isMobile, createResponse };
