@@ -1,6 +1,6 @@
 type HTTPMethod = 'GET' | 'POST' | 'HEAD' | 'PUT' | 'DELETE' | 'PATCH' | 'OPTIONS' | 'TRACE' | 'CONNECT';
 
-export interface OriginOptions {
+export interface UpstreamOptions {
   domain: string;
   protocol?: 'http' | 'https';
   port?: number;
@@ -9,6 +9,7 @@ export interface OriginOptions {
   headers?: {
     [key: string]: string;
   };
+  retry?: number;
   weight?: number;
 }
 
@@ -49,7 +50,7 @@ export interface OptimizationOptions {
 }
 
 export interface Configuration {
-  origin: OriginOptions | OriginOptions[];
+  upstream: UpstreamOptions | UpstreamOptions[];
   firewall?: FirewallOptions | FirewallOptions[];
   cors?: CORSOptions;
   network?: NetworkOptions;

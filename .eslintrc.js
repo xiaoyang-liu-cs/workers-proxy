@@ -18,5 +18,6 @@ module.exports = {
   ],
   rules: {
     'no-restricted-syntax': 0,
+    'import/prefer-default-export': 0,
   },
 };

@@ -137,10 +137,14 @@ const getFieldParam = (
   return null;
 };
 
-const firewall = (
+export const getFirewallResponse = (
   request: Request,
-  firewallOptions: FirewallOptions | FirewallOptions[],
+  firewallOptions: FirewallOptions | FirewallOptions[] | undefined,
 ): Response | null => {
+  if (firewallOptions === undefined) {
+    return null;
+  }
+
   const firewallRules = Array.isArray(firewallOptions) ? firewallOptions : [firewallOptions];
 
   for (const { field, operator, value } of firewallRules) {
@@ -156,5 +160,3 @@ const firewall = (
   }
   return null;
 };
-
-export default firewall;
