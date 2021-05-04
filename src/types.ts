@@ -30,10 +30,10 @@ export interface CORSOptions {
   maxAge?: number;
 }
 
+export type LoadBalancingMethod = 'round-robin' | 'ip-hash' | 'random';
 export interface NetworkOptions {
-  loadBalancer: 'round-robin' | 'ip-hash' | 'random';
+  loadBalancingMethod: LoadBalancingMethod;
   websocket?: boolean;
-  geolocation?: boolean;
 }
 
 export interface CacheOptions {
@@ -55,5 +55,5 @@ export interface Configuration {
   cors?: CORSOptions;
   network?: NetworkOptions;
   cache?: CacheOptions;
-  optimizatioin?: OptimizationOptions;
+  optimization?: OptimizationOptions;
 }

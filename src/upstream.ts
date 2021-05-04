@@ -1,5 +1,5 @@
 import { createResponse } from './utils';
-import { UpstreamOptions } from './types';
+import { UpstreamOptions, OptimizationOptions } from './types';
 
 const cloneRequest = (
   url: string,
@@ -7,6 +7,7 @@ const cloneRequest = (
   headers?: {
     [key: string]: string;
   },
+  optimization?: OptimizationOptions,
 ): Request => {
   const cloneHeaders = new Headers(request.headers);
   if (headers !== undefined) {
@@ -15,21 +16,20 @@ const cloneRequest = (
     }
   }
 
-  return new Request(url, {
+  const requestInit: RequestInit = {
     body: request.body,
     method: request.method,
     redirect: request.redirect,
     headers: cloneHeaders,
-  });
-};
+  };
 
-const loadBalancer = (
-  upstreamOptions: UpstreamOptions | UpstreamOptions[],
-): UpstreamOptions => {
-  if (Array.isArray(upstreamOptions)) {
-    return upstreamOptions[0];
+  if (optimization !== undefined) {
+    requestInit.cf = {
+      mirage: optimization.mirage,
+      minify: optimization.minify,
+    };
   }
-  return upstreamOptions;
+  return new Request(url, requestInit);
 };
 
 const getURL = (
@@ -66,15 +66,20 @@ const sendRequest = async (
 
 export const getUpstreamResponse = async (
   request: Request,
-  upstreamOptions: UpstreamOptions | UpstreamOptions[],
+  upstream: UpstreamOptions,
+  optimization?: OptimizationOptions,
 ): Promise<Response> => {
-  const upstream = loadBalancer(upstreamOptions);
   const url = getURL(request.url, upstream);
   const timeout = upstream.timeout || 100;
-  const upstreamRequest = cloneRequest(url, request, upstream.headers);
+  const upstreamRequest = cloneRequest(
+    url, request, upstream.headers, optimization,
+  );
 
   try {
-    const response = await sendRequest(upstreamRequest, timeout);
+    const response = await sendRequest(
+      upstreamRequest,
+      timeout,
+    );
     return response;
   } catch (error) {
     return createResponse(

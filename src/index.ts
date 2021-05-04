@@ -1,5 +1,6 @@
 import { getFirewallResponse } from './firewall';
 import { getUpstreamResponse } from './upstream';
+import LoadBalancer from './load-balancer';
 import { Configuration } from './types';
 
 class RocketBooster {
@@ -18,9 +19,16 @@ class RocketBooster {
       return firewallResponse;
     }
 
+    const loadBalancer = new LoadBalancer(
+      this.config.upstream,
+      this.config.network,
+    );
+    const upstream = loadBalancer.select();
+
     const upstreamResponse = await getUpstreamResponse(
       request,
-      this.config.upstream,
+      upstream,
+      this.config.optimization,
     );
     if (!upstreamResponse.ok) {
       return upstreamResponse;
