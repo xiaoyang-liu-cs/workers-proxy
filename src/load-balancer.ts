@@ -23,7 +23,6 @@ class LoadBalancer {
       return this.upstream[Math.floor(Math.random() * this.upstream.length)];
     }
 
-    // Fallback upstream
     return this.upstream[0];
   }
 }

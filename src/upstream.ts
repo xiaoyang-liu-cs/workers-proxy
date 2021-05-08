@@ -1,90 +1,100 @@
 import { createResponse } from './utils';
 import { UpstreamOptions, OptimizationOptions } from './types';
 
-const cloneRequest = (
-  url: string,
-  request: Request,
-  headers?: {
-    [key: string]: string;
-  },
-  optimization?: OptimizationOptions,
-): Request => {
-  const cloneHeaders = new Headers(request.headers);
-  if (headers !== undefined) {
-    for (const [name, value] of Object.entries(headers)) {
-      cloneHeaders.set(name, value);
-    }
+class Upstream {
+  upstream: UpstreamOptions;
+
+  optimization?: OptimizationOptions;
+
+  constructor(
+    upstream: UpstreamOptions,
+    optimization?: OptimizationOptions,
+  ) {
+    this.upstream = upstream;
+    this.optimization = optimization;
   }
 
-  const requestInit: RequestInit = {
-    body: request.body,
-    method: request.method,
-    redirect: request.redirect,
-    headers: cloneHeaders,
+  getResponse = async (
+    request: Request,
+  ): Promise<Response> => {
+    const url = this.getURL(request.url);
+    const timeout = this.upstream.timeout || 100;
+    const upstreamRequest = this.cloneRequest(
+      url,
+      request,
+    );
+
+    try {
+      const response = await this.sendRequest(
+        upstreamRequest,
+        timeout,
+      );
+      return response;
+    } catch (error) {
+      return createResponse(
+        'Error: Request Timeout',
+        408,
+      );
+    }
   };
 
-  if (optimization !== undefined) {
-    requestInit.cf = {
-      mirage: optimization.mirage,
-      minify: optimization.minify,
+  cloneRequest = (
+    url: string,
+    request: Request,
+  ): Request => {
+    const cloneHeaders = new Headers(request.headers);
+    if (this.upstream.headers !== undefined) {
+      for (const [name, value] of Object.entries(this.upstream.headers)) {
+        cloneHeaders.set(name, value);
+      }
+    }
+
+    const requestInit: RequestInit = {
+      body: request.body,
+      method: request.method,
+      redirect: request.redirect,
+      headers: cloneHeaders,
     };
-  }
-  return new Request(url, requestInit);
-};
 
-const getURL = (
-  url: string,
-  upstreamOptions: UpstreamOptions,
-): string => {
-  const cloneURL = new URL(url);
-  cloneURL.hostname = upstreamOptions.domain;
+    if (this.optimization !== undefined) {
+      requestInit.cf = {
+        mirage: this.optimization.mirage,
+        minify: this.optimization.minify,
+      };
+    }
+    return new Request(url, requestInit);
+  };
 
-  if (upstreamOptions.port !== undefined) {
-    cloneURL.port = upstreamOptions.port.toString();
-  }
-  if (upstreamOptions.path !== undefined) {
-    cloneURL.pathname = `${upstreamOptions.path}${cloneURL.pathname}`;
-  }
-  if (upstreamOptions.protocol !== undefined) {
-    cloneURL.protocol = `${upstreamOptions.protocol}:`;
-  }
-  return cloneURL.href;
-};
+  getURL = (
+    url: string,
+  ): string => {
+    const cloneURL = new URL(url);
+    cloneURL.hostname = this.upstream.domain;
 
-const sendRequest = async (
-  request: Request,
-  timeout: number,
-): Promise<Response> => {
-  const timeoutId = setTimeout(() => {
-    throw new Error('Fetch Timeout');
-  }, timeout);
+    if (this.upstream.port !== undefined) {
+      cloneURL.port = this.upstream.port.toString();
+    }
+    if (this.upstream.path !== undefined) {
+      cloneURL.pathname = `${this.upstream.path}${cloneURL.pathname}`;
+    }
+    if (this.upstream.protocol !== undefined) {
+      cloneURL.protocol = `${this.upstream.protocol}:`;
+    }
+    return cloneURL.href;
+  };
 
-  const response = await fetch(request);
-  clearTimeout(timeoutId);
-  return response;
-};
+  sendRequest = async (
+    request: Request,
+    timeout: number,
+  ): Promise<Response> => {
+    const timeoutId = setTimeout(() => {
+      throw new Error('Fetch Timeout');
+    }, timeout);
 
-export const getUpstreamResponse = async (
-  request: Request,
-  upstream: UpstreamOptions,
-  optimization?: OptimizationOptions,
-): Promise<Response> => {
-  const url = getURL(request.url, upstream);
-  const timeout = upstream.timeout || 100;
-  const upstreamRequest = cloneRequest(
-    url, request, upstream.headers, optimization,
-  );
-
-  try {
-    const response = await sendRequest(
-      upstreamRequest,
-      timeout,
-    );
+    const response = await fetch(request);
+    clearTimeout(timeoutId);
     return response;
-  } catch (error) {
-    return createResponse(
-      'Error: Request Timeout',
-      408,
-    );
-  }
-};
+  };
+}
+
+export default Upstream;
