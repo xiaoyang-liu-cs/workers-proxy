@@ -25,14 +25,14 @@ export interface CORSOptions {
   origins?: string[] | '*';
   methods?: HTTPMethod[] | '*';
   exposeHeaders?: string[] | '*';
-  allowHeaders?: string[];
+  allowHeaders?: string[] | '*';
   credentials?: boolean;
   maxAge?: number;
 }
 
 export type LoadBalancingMethod = 'round-robin' | 'ip-hash' | 'random';
 export interface NetworkOptions {
-  loadBalancingMethod: LoadBalancingMethod;
+  loadBalancingMethod?: LoadBalancingMethod;
   websocket?: boolean;
 }
 
@@ -41,7 +41,7 @@ export interface CacheOptions {
 }
 
 export interface OptimizationOptions {
-  mirage: boolean;
+  mirage?: boolean;
   minify?: {
     javascript?: boolean;
     css?: boolean;

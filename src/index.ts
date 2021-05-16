@@ -1,8 +1,8 @@
 import Firewall from './firewall';
 import Upstream from './upstream';
 import LoadBalancer from './load-balancer';
-import { Configuration } from './types';
 import CORS from './cors';
+import { Configuration } from './types';
 
 class RocketBooster {
   config: Configuration;
@@ -33,7 +33,10 @@ class RocketBooster {
     const cors = new CORS(
       this.config.cors,
     );
-    const corsResponse = cors.transformResponse(upstreamResponse);
+    const corsResponse = cors.transformResponse(
+      request,
+      upstreamResponse,
+    );
 
     return corsResponse;
   }

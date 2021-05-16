@@ -10,4 +10,7 @@ const createResponse = (
   status,
 });
 
-export { isMobile, createResponse };
+export {
+  isMobile,
+  createResponse,
+};
