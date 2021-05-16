@@ -26,75 +26,86 @@ class CORS {
       maxAge,
     } = this.corsOptions;
 
+    const corsHeaders = new Headers(
+      response.headers,
+    );
+
     if (Array.isArray(origins)) {
       const requestOrigin = request.headers.get('Origin');
       if (
         requestOrigin !== null
         && origins.includes(requestOrigin)
       ) {
-        response.headers.set(
+        corsHeaders.set(
           'Access-Control-Allow-Origin',
           requestOrigin,
         );
       }
     } else if (origins === '*') {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Allow-Origin',
         '*',
       );
     }
 
     if (Array.isArray(methods)) {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Allow-Methods',
         methods.join(','),
       );
     } else if (methods === '*') {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Allow-Methods',
         '*',
       );
     }
 
     if (Array.isArray(exposeHeaders)) {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Expose-Headers',
         exposeHeaders.join(','),
       );
     } else if (exposeHeaders === '*') {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Expose-Headers',
         '*',
       );
     }
 
     if (Array.isArray(allowHeaders)) {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Allow-Headers',
         allowHeaders.join(','),
       );
     } else if (allowHeaders === '*') {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Allow-Headers',
         '*',
       );
     }
 
     if (credentials !== undefined) {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Allow-Credentials',
         credentials.toString(),
       );
     }
 
     if (maxAge !== undefined) {
-      response.headers.set(
+      corsHeaders.set(
         'Access-Control-Max-Age',
         maxAge.toString(),
       );
     }
 
-    return response;
+    return new Response(
+      response.body,
+      {
+        status: response.status,
+        statusText: response.statusText,
+        headers: corsHeaders,
+      },
+    );
   }
 }
 

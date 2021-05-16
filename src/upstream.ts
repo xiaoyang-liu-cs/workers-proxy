@@ -18,7 +18,7 @@ class Upstream {
     request: Request,
   ): Promise<Response> => {
     const url = this.getURL(request.url);
-    const timeout = this.upstream.timeout || 100;
+    const timeout = this.upstream.timeout || 10000;
     const upstreamRequest = this.cloneRequest(
       url,
       request,
@@ -49,11 +49,11 @@ class Upstream {
       }
     }
 
-    const requestInit: RequestInit = {
+    const requestInit: CfRequestInit = {
       body: request.body,
       method: request.method,
-      redirect: request.redirect,
       headers: cloneHeaders,
+      redirect: 'follow',
     };
 
     if (this.optimization !== undefined) {
