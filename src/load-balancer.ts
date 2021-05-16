@@ -11,7 +11,10 @@ class LoadBalancer {
   ) {
     this.upstream = Array.isArray(upstreamOptions) ? upstreamOptions : [upstreamOptions];
 
-    if (networkOptions === undefined) {
+    if (
+      networkOptions === undefined
+      || networkOptions.loadBalancingMethod === undefined
+    ) {
       this.method = 'random';
     } else {
       this.method = networkOptions.loadBalancingMethod;

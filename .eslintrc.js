@@ -3,6 +3,13 @@ module.exports = {
     worker: true,
     es2021: true,
   },
+  settings: {
+    'import/resolver': {
+      node: {
+        extensions: ['.js', '.ts'],
+      },
+    },
+  },
   extends: [
     'airbnb-base',
     'plugin:@typescript-eslint/eslint-recommended',
@@ -19,5 +26,6 @@ module.exports = {
   rules: {
     'no-restricted-syntax': 0,
     'import/prefer-default-export': 0,
+    'import/extensions': 0,
   },
 };

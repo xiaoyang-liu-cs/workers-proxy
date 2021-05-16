@@ -128,26 +128,20 @@ class Firewall {
       );
     }
 
-    if (
-      operator === 'in'
-    && Array.isArray(value)
-    && value.includes(fieldParam)
-    ) {
-      return createResponse(
-        'You don\'t have permission to access this service.',
-        403,
+    if (Array.isArray(value)) {
+      const contains = value.some(
+        (item: string | number) => item === fieldParam,
       );
-    }
 
-    if (
-      operator === 'not in'
-    && Array.isArray(value)
-    && !value.includes(fieldParam)
-    ) {
-      return createResponse(
-        'You don\'t have permission to access this service.',
-        403,
-      );
+      if (
+        (contains && operator === 'in')
+        || (!contains && operator === 'not in')
+      ) {
+        return createResponse(
+          'You don\'t have permission to access this service.',
+          403,
+        );
+      }
     }
 
     if (
