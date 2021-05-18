@@ -1,33 +1,42 @@
 {
-  "name": "booster",
+  "name": "rocket-booster",
   "version": "1.0.0",
-  "description": "booster.js is a speed and performance optimizier for your website, delivering fast web experiences to users.",
-  "main": "index.js",
-  "directories": {
-    "example": "examples"
-  },
+  "description": "The edge-rendered speed booster for web applications, storage platforms, and RESTful APIs.",
+  "main": "dist/index.js",
+  "types": "dist/index.d.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint --fix src/*"
+    "lint": "eslint --fix src/* --ext .ts",
+    "build": "webpack"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/xiaoyang-liu-cs/booster.js.git"
+    "url": "git+https://github.com/rocket-booster/rocket-booster.git"
   },
   "keywords": [
     "serverless",
-    "cloudflare workers",
-    "reverse proxy"
+    "proxy",
+    "workers",
+    "cloudflare"
   ],
   "author": "Xiaoyang Liu",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/xiaoyang-liu-cs/booster.js/issues"
+    "url": "https://github.com/rocket-booster/rocket-booster/issues"
   },
-  "homepage": "https://github.com/xiaoyang-liu-cs/booster.js#readme",
+  "homepage": "https://booster.js.org",
   "devDependencies": {
+    "@cloudflare/workers-types": "^2.2.1",
+    "@typescript-eslint/eslint-plugin": "^4.22.0",
+    "@typescript-eslint/parser": "^4.22.0",
+    "clean-webpack-plugin": "*",
     "eslint": "^7.24.0",
     "eslint-config-airbnb-base": "^14.2.1",
-    "eslint-plugin-import": "^2.22.1"
+    "eslint-plugin-import": "^2.22.1",
+    "eslint-webpack-plugin": "^2.5.4",
+    "ts-loader": "^9.0.0",
+    "typescript": "^4.2.4",
+    "webpack": "^5.34.0",
+    "webpack-cli": "^4.6.0"
   }
 }
