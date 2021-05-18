@@ -1,112 +1,177 @@
-[![Header](./.github/img/header.png)](https://github.com/xiaoyang-liu-cs/booster.js)
+[![Header](./.github/img/header.png)](https://github.com//rocket-booster/rocket-booster)
 
 <div align="center">
 
-[![GitHub stars](https://img.shields.io/github/stars/xiaoyang-liu-cs/booster.js?style=for-the-badge)](https://github.com/xiaoyang-liu-cs/booster.js/stargazers)
-[![LICENSE](https://img.shields.io/github/forks/xiaoyang-liu-cs/booster.js.svg?style=for-the-badge)](https://github.com/xiaoyang-liu-cs/booster.js/network/members)
-[![GitHub closed issues](https://img.shields.io/github/issues-closed-raw/xiaoyang-liu-cs/booster.js?style=for-the-badge)](https://github.com/xiaoyang-liu-cs/booster.js/issues)
+[![GitHub stars](https://img.shields.io/github/stars/rocket-booster/rocket-booster?style=for-the-badge)](https://github.com/rocket-booster/rocket-booster/stargazers)
+[![LICENSE](https://img.shields.io/github/forks/rocket-booster/rocket-booster.svg?style=for-the-badge)](https://github.com/rocket-booster/rocket-booster/network/members)
+[![Package version](https://img.shields.io/npm/v/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
+[![Bundle size](https://img.shields.io/bundlephobia/minzip/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
 
-[![forthebadge](https://forthebadge.com/images/badges/built-by-developers.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/made-with-javascript.svg)](https://forthebadge.com)
-[![forthebadge](https://forthebadge.com/images/badges/winter-is-coming.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com)
+[![forthebadge](https://forthebadge.com/images/badges/powered-by-netflix.svg)](https://forthebadge.com)
 
-[Releases](https://github.com/xiaoyang-liu-cs/booster.js/releases) | 
-[Examples](#examples) | 
-[Contribute](#contribute) | 
+[Releases](https://github.com/rocket-booster/rocket-booster/releases) |
+[Examples](#examples) |
+[Contribute](#contribute) |
 [Buy Me a Coffee](https://www.buymeacoffee.com/xiaoyangliu)
 
 </div>
 
-**booster.js** is a speed and performance optimizier for your website, delivering fast web experiences to users. Built with Cloudflare Workers, it caches static assets on the high performance global network, applies optimizations to web pages, and guards your website from scrapers or malicious attacks.
+**Rocket Booster** is the edge-rendered speed booster for web applications, storage platforms, and RESTful APIs. It's a reverse proxy that sits in front of web servers, intercepting requests from clients.
 
-- Speed: Deliver your website with Cloudflare’s global network, which is milliseconds away from virtually every Internet user.
-- Network: Set up HTTP/2, TLS 1.3, HTTPS (Free SSL Certificate), and IPv6 for your website.
-- Optimization: Minify JavaScript codes, compress images, cache static assets.
-- Firewall: Block traffics from specific IP addresses, regions, or known scrapers.
-- Routes: Serve different webpages to visitors based on their region or devices.
-- Serverless: No virtual machines, no servers, and no containers to maintain.
-- Todo: Load balancer, HTMLRewriter, and advanced routing rules.
+- Performance: Deploy to a network of data centers powered by Cloudflare.
+- Serverless: No VMs, no servers, and no containers to spin up or manage.
+- Optimization: Minify HTML/CSS/JS files, compress images, cache static assets.
+- Cross-Origin: Add necessary CORS headers to the proxied response.
+- Firewall: Block traffics from specific IP addresses, countries, or User-Agent.
+- Network: Enable HTTPS, HTTP/3 (with QUIC), TLS 1.3, and IPv6 for web applications.
+- Load Balance: Distribute incoming traffics evenly among different servers.
 
-[![Demo](./.github/img/demo.png)](https://github.com/xiaoyang-liu-cs/booster.js)
+![Demo](./.github/img/demo.png)
 
 ## Build and Deploy
 
-### Deploy with Wrangler
+1. [Install Wrangler CLI](https://github.com/cloudflare/wrangler#installation)
 
-1. [Install Wrangler](https://github.com/cloudflare/wrangler#installation)
-
-2. Generate a new project
-
-```
-wrangler generate booster https://github.com/xiaoyang-liu-cs/booster.js
+```sh
+npm install @cloudflare/wrangler -g
 ```
 
-3. [Configure](https://developers.cloudflare.com/workers/quickstart/#configure) `wrangler.toml` to prepare your project for deployment
+2. Generate from [rocket-booster-template](https://github.com/rocket-booster/rocket-booster-template)
 
+```sh
+wrangler generate booster https://github.com/rocket-booster/rocket-booster-template
 ```
+
+3. Install dependencies
+
+```sh
+cd booster
+
+npm install
+```
+
+4. Authenticate Wrangler with a Cloudflare API Token
+
+```sh
+wrangler login
+
 wrangler config
 ```
 
-4. Build and deploy on Cloudflare Workers
+5. Edit `src/index.js` to configure Rocket Booster
 
-```
+6. Build and publish to Cloudflare Workers
+
+```sh
 wrangler build
+
 wrangler publish
 ```
 
-### Deploy manually
+## Configuration
 
-1. Navigate to [Cloudflare Workers](https://workers.cloudflare.com), register or sign in your Cloudflare account, and set custom subdomain for workers, and create a new Worker.
+### Upstream
 
-2. Customize [src/booster.js](https://github.com/xiaoyang-liu-cs/booster.js/blob/master/src/booster.js), paste the code into Cloudflare online editor to replace the default one.
+- `domain`: The domain name of the upstream server.
+- `protocol`: The protocol scheme of the upstream server. (Optional)
+- `port`: The port of the upstream server. (Optional)
+- `path`: The path of the upstream server. (Optional)
+- `timeout`: The maximum wait time on a request to the upstream server.  (Optional)
 
-3. Change the name of your Worker, save and deploy the code.
-
-### Bind to Custom Domain
-
-1. Add your domain to Cloudflare.
-
-2. Navigate to the dashboard, select 'Workers' page, and click on 'Add Route'.
-
-3. Type `https://<domain_name>/*` in `Route` and select the Worker you've created.
-
-4. Add a CNAME DNS record for your custom domain. Input the subdomain (Example: `@` or `www`) in the 'Name' field, input the **second level domain** of your workers (Example: `readme.workers.dev`) in the 'Target' field, and then set 'Proxy status' to 'Proxied'. 
-
-## Config
-
-[![Config](./.github/img/config.png)](https://github.com/xiaoyang-liu-cs/booster.js)
-
-`basic`
-- `upstream`: Protocol, Domain, Port (Optional), Path (Optional). Example: `https://www.math.ucla.edu/~tao/`
-- `mobileRedirect`: Automatically redirect mobile device visitors to a mobile-optimized website.
-
-`firewall`
-- `blockedRegion`: Block visitors from specific regions. Full list of codes: [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2)
-- `blockedIPAddress`: Block visitors from specific IP Address.
-- `scrapeShield`: Discover, detect, and deter content scraping. Reference: [Introducing ScrapeShield](https://blog.cloudflare.com/introducing-scrapeshield-discover-defend-dete/)
-
-`routes`: Map country/region codes to specific upstream. Full list of codes: [ISO 3166-1 alpha-2](https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2) Example:
-
-```js
-routes: {
-    FR: 'https://www.google.fr/',
-    CA: 'https://www.google.ca/'
-}
+```ts
+const config = {
+  upstream: {
+    domain: 'en.wikipedia.org',
+    protocol: 'https',
+    port: 443,
+    path: '/',
+    timeout: 10000,
+  },
+  /* ... */
+};
 ```
 
-`optimization`
-- `cacheEverything`: Forces Cloudflare to cache the response for this request, regardless of the response headers.
-- `cacheTtl`: Forces Cloudflare to cache the response for this request with specific TTL, regardless of the response headers.
-- `mirage`: Detects screen size and connection speed to optimally deliver images for the current browser window.
-- `polish`: Automatically optimizes the images on your site. The possible values are `lossy`, `lossless` or `off`. Reference: [Introducing Polish](https://blog.cloudflare.com/introducing-polish-automatic-image-optimizati/)
-- `minify`: Removes unnecessary characters from JavaScript, CSS, and HTML files.
+To load balance HTTP traffic to a group of servers, pass an array of server objects to `upstream`. Each request will be passed to a randomly selected server.
 
-### Examples
+```ts
+const config = {
+  upstream: [
+    {
+      domain: 's1.example.com',
+      protocol: 'https',
+    },
+    {
+      domain: 's2.example.com',
+      protocol: 'https',
+    },
+    {
+      domain: 's3.example.com',
+      protocol: 'https',
+    },
+  ],
+  /* ... */
+};
+```
 
-| Upstream | Config | Demo |
-|-|-|-|
-| [Google](https://www.google.com) | [examples/google.js](examples/google.js) | N/A |
-| [Wikipedia](https://en.wikipedia.org) | [examples/wikipedia.js](examples/wikipedia.js) | [https://booster.readme.workers.dev](https://booster.readme.workers.dev) |
+### Optimization
+
+- `minify`: Remove unnecessary characters (like whitespace, comments, etc.) from HTML, CSS, and JavaScript files.
+- `mirage`: Detect screen size and connection speed to optimally deliver images for the current browser window.
+
+```ts
+const config = {
+  /* ... */
+  optimization: {
+    mirage: true,
+    minify: {
+      javascript: true,
+      css: true,
+      html: true,
+    },
+  },
+};
+```
+
+Several optimizations are enabled by default.
+
+- [Brotli](https://brotli.org/): Speed up page load times for visitor’s HTTPS traffic by applying Brotli compression.
+- [HTTP/2](https://developers.google.com/web/fundamentals/performance/http2): Improve page load time by connection multiplexing, header compression, and server push.
+- [HTTP/3 with QUIC](https://en.wikipedia.org/wiki/HTTP/3): Accelerate HTTP requests by using QUIC, which provides encryption and performance improvements compared to TCP and TLS.
+- 0-RTT Connection Resumption: Improve performance for clients who have previously connected to the website.
+
+### Cross-Origin Resource Sharing (CORS)
+
+- `origins`: The origins to allow requests from.
+- `methods`: The methods which the origins are allowed to access.
+- `allowHeaders`: Headers to accept from the client.
+- `exposeHeaders`: Give explicit permissions for the client to read headers in CORS responses.
+- `credentials`: Inject the `Access-Control-Allow-Credentials` header in responses.
+- `maxAge`: Specify the value in seconds for how long the response to the preflight request can be cached for.
+
+```ts
+const config = {
+  /* ... */
+  cors: {
+    origins: [
+      'https://example.com',
+    ],
+    methods: [
+      'GET',
+      'POST',
+    ],
+    allowHeaders: [
+      'X-Forwarded-For',
+    ],
+    exposeHeaders: [
+      'X-Forwarded-For',
+    ],
+    credentials: true,
+    maxAge: 86400,
+  },
+};
+```
 
 ## Contribute
 
@@ -117,9 +182,9 @@ routes: {
 
 ### Current contributors
 
-[![](https://contributors-img.web.app/image?repo=xiaoyang-liu-cs/booster.js)](https://github.com/xiaoyang-liu-cs/booster.js/graphs/contributors)
+[![Contributors](https://contributors-img.web.app/image?repo=rocket-booster/rocket-booster)](https://github.com/rocket-booster/rocket-booster/graphs/contributors)
 
-## Support booster.js
+## Support Rocket Booster
 
 We accept donations through these channels:
 
