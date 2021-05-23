@@ -1,6 +1,15 @@
 const isMobile = (userAgent: string): boolean => {
-  const agents = ['Android', 'iPhone', 'SymbianOS', 'Windows Phone', 'iPad', 'iPod'];
-  return agents.some((agent) => userAgent.indexOf(agent) > 0);
+  const toMatch = [
+    /Android/i,
+    /webOS/i,
+    /iPhone/i,
+    /iPad/i,
+    /iPod/i,
+    /BlackBerry/i,
+    /Windows Phone/i,
+  ];
+
+  return toMatch.some((toMatchItem) => userAgent.match(toMatchItem));
 };
 
 const createResponse = (

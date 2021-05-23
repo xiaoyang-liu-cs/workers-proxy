@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "jest",
     "lint": "eslint --fix src/* --ext .ts",
     "build": "webpack"
   },
@@ -27,6 +27,7 @@
   "homepage": "https://booster.js.org",
   "devDependencies": {
     "@cloudflare/workers-types": "^2.2.1",
+    "@types/jest": "^26.0.23",
     "@typescript-eslint/eslint-plugin": "^4.22.0",
     "@typescript-eslint/parser": "^4.22.0",
     "clean-webpack-plugin": "*",

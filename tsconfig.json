@@ -9,6 +9,7 @@
       "webworker"
     ],
     "types": [
+      "jest",
       "@cloudflare/workers-types"
     ],
     "alwaysStrict": true,
@@ -23,6 +24,7 @@
   "include": [
     "src/*.ts",
     "src/**/*.ts",
+    "test/*.ts",
     "node_modules/@cloudflare/workers-types/index.d.ts"
   ],
   "exclude": [
