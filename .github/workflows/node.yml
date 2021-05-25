@@ -1,0 +1,40 @@
+name: Node.js Test and Build
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [12.x, 14.x, 15.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+
+    - name: Cache dependencies
+      uses: actions/cache@v2
+      with:
+        path: |
+          **/node_modules
+        key: ${{ runner.os }}-${{ hashFiles('**/package-lock.json') }}
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run unit tests and generate coverage report
+      run: npm test
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+
+    - name: Build
+      run: npm run build
