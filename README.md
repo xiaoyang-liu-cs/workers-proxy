@@ -2,10 +2,10 @@
 
 <div align="center">
 
-[![GitHub stars](https://img.shields.io/github/stars/rocket-booster/rocket-booster?style=for-the-badge)](https://github.com/rocket-booster/rocket-booster/stargazers)
-[![LICENSE](https://img.shields.io/github/forks/rocket-booster/rocket-booster.svg?style=for-the-badge)](https://github.com/rocket-booster/rocket-booster/network/members)
+![GitHub Actions](https://img.shields.io/github/workflow/status/rocket-booster/rocket-booster/node?style=for-the-badge)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/rocket-booster/rocket-booster?style=for-the-badge)](https://app.codecov.io/gh/rocket-booster/rocket-booster/)
 [![Package version](https://img.shields.io/npm/v/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
-[![Bundle size](https://img.shields.io/bundlephobia/minzip/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
+[![Bundle size](https://img.shields.io/bundlephobia/min/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com)
