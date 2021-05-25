@@ -31,7 +31,7 @@ class CORS {
     );
 
     if (Array.isArray(origins)) {
-      const requestOrigin = request.headers.get('Origin');
+      const requestOrigin = request.headers.get('origin');
       if (
         requestOrigin !== null
         && origins.includes(requestOrigin)

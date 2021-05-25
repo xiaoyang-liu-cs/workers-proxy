@@ -1,6 +1,16 @@
-import { isMobile } from '../src/utils';
+import { isMobile, createResponse } from '../src/utils';
 
-test('utils.ts -> isMobile()', async () => {
+test('utils.ts -> createResponse()', () => {
+  const response = createResponse(
+    'Test response body',
+    403,
+  );
+  expect(response.status).toEqual(403);
+  expect(response.ok).toEqual(false);
+  expect(response.body).toEqual('Test response body');
+});
+
+test('utils.ts -> isMobile()', () => {
   const userAgents: [string, boolean][] = [
     [
       // Pixel 3, Chrome 90

@@ -5,7 +5,7 @@
   "main": "dist/index.js",
   "types": "dist/index.d.js",
   "scripts": {
-    "test": "jest",
+    "test": "jest --coverage",
     "lint": "eslint --fix src/* --ext .ts",
     "build": "webpack"
   },

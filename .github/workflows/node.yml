@@ -20,6 +20,14 @@ jobs:
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-    - run: npm ci
-    - run: npm run buil
-    - run: npm test
+
+    - name: Install dependencies
+      run: npm ci
+
+    - name: Run unit tests and generate coverage report
+      run: npm test -- --coverage
+    - name: Upload coverage to Codecov
+      uses: codecov/codecov-action@v1
+
+    - name: Build
+      run: npm run build
