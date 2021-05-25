@@ -2,10 +2,10 @@
 
 <div align="center">
 
-![GitHub Actions](https://img.shields.io/github/workflow/status/rocket-booster/rocket-booster/node?style=for-the-badge)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/rocket-booster/rocket-booster?style=for-the-badge)](https://app.codecov.io/gh/rocket-booster/rocket-booster/)
-[![Package version](https://img.shields.io/npm/v/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
-[![Bundle size](https://img.shields.io/bundlephobia/min/rocket-booster?style=for-the-badge)](https://www.npmjs.com/package/rocket-booster)
+![GitHub Actions](https://img.shields.io/github/workflow/status/rocket-booster/rocket-booster/Node.js%20Test%20and%20Build?style=for-the-badge&logo=github)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/rocket-booster/rocket-booster?style=for-the-badge&logo=codecov)](https://app.codecov.io/gh/rocket-booster/rocket-booster/)
+[![Package version](https://img.shields.io/npm/v/rocket-booster?style=for-the-badge&logo=npm&color=red)](https://www.npmjs.com/package/rocket-booster)
+[![Bundle size](https://img.shields.io/bundlephobia/min/rocket-booster?style=for-the-badge&logo=webpack)](https://www.npmjs.com/package/rocket-booster)
 
 [![forthebadge](https://forthebadge.com/images/badges/made-with-typescript.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com)
