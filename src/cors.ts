@@ -18,10 +18,10 @@ class CORS {
     }
 
     const {
-      origins,
+      origin,
       methods,
-      exposeHeaders,
-      allowHeaders,
+      exposedHeaders,
+      allowedHeaders,
       credentials,
       maxAge,
     } = this.corsOptions;
@@ -30,72 +30,55 @@ class CORS {
       response.headers,
     );
 
-    if (Array.isArray(origins)) {
-      const requestOrigin = request.headers.get('origin');
-      if (
-        requestOrigin !== null
-        && origins.includes(requestOrigin)
-      ) {
-        corsHeaders.set(
-          'Access-Control-Allow-Origin',
-          requestOrigin,
-        );
+    const requestOrigin = request.headers.get('origin');
+    if (requestOrigin === null || origin === false) {
+      return response;
+    }
+
+    if (origin === true) {
+      corsHeaders.set('Access-Control-Allow-Origin', requestOrigin);
+    } else if (Array.isArray(origin)) {
+      if (origin.includes(requestOrigin)) {
+        corsHeaders.set('Access-Control-Allow-Origin', requestOrigin);
       }
-    } else if (origins === '*') {
-      corsHeaders.set(
-        'Access-Control-Allow-Origin',
-        '*',
-      );
+    } else if (origin === '*') {
+      corsHeaders.set('Access-Control-Allow-Origin', '*');
     }
 
     if (Array.isArray(methods)) {
-      corsHeaders.set(
-        'Access-Control-Allow-Methods',
-        methods.join(','),
-      );
+      corsHeaders.set('Access-Control-Allow-Methods', methods.join(','));
     } else if (methods === '*') {
-      corsHeaders.set(
-        'Access-Control-Allow-Methods',
-        '*',
-      );
+      corsHeaders.set('Access-Control-Allow-Methods', '*');
+    } else {
+      const requestMethod = request.headers.get('Access-Control-Request-Method');
+      if (requestMethod !== null) {
+        corsHeaders.set('Access-Control-Allow-Methods', requestMethod);
+      }
     }
 
-    if (Array.isArray(exposeHeaders)) {
-      corsHeaders.set(
-        'Access-Control-Expose-Headers',
-        exposeHeaders.join(','),
-      );
-    } else if (exposeHeaders === '*') {
-      corsHeaders.set(
-        'Access-Control-Expose-Headers',
-        '*',
-      );
+    if (Array.isArray(exposedHeaders)) {
+      corsHeaders.set('Access-Control-Expose-Headers', exposedHeaders.join(','));
+    } else if (exposedHeaders === '*') {
+      corsHeaders.set('Access-Control-Expose-Headers', '*');
     }
 
-    if (Array.isArray(allowHeaders)) {
-      corsHeaders.set(
-        'Access-Control-Allow-Headers',
-        allowHeaders.join(','),
-      );
-    } else if (allowHeaders === '*') {
-      corsHeaders.set(
-        'Access-Control-Allow-Headers',
-        '*',
-      );
+    if (Array.isArray(allowedHeaders)) {
+      corsHeaders.set('Access-Control-Allow-Headers', allowedHeaders.join(','));
+    } else if (allowedHeaders === '*') {
+      corsHeaders.set('Access-Control-Allow-Headers', '*');
+    } else {
+      const requestHeaders = request.headers.get('Access-Control-Request-Headers');
+      if (requestHeaders !== null) {
+        corsHeaders.set('Access-Control-Allow-Headers', requestHeaders);
+      }
     }
 
-    if (credentials !== undefined) {
-      corsHeaders.set(
-        'Access-Control-Allow-Credentials',
-        credentials.toString(),
-      );
+    if (credentials === true) {
+      corsHeaders.set('Access-Control-Allow-Credentials', 'true');
     }
 
-    if (maxAge !== undefined) {
-      corsHeaders.set(
-        'Access-Control-Max-Age',
-        maxAge.toString(),
-      );
+    if (maxAge !== undefined && Number.isInteger(maxAge)) {
+      corsHeaders.set('Access-Control-Max-Age', maxAge.toString());
     }
 
     return new Response(
