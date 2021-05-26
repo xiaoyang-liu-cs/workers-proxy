@@ -9,15 +9,19 @@ class FakeHeaders {
     this.headers = new Map();
     if (init !== undefined) {
       for (const [key, value] of Object.entries(init)) {
-        this.headers.set(key, value);
+        this.headers.set(key.toLowerCase(), value);
       }
     }
   }
 
   get(
     key: string,
-  ): string | undefined {
-    return this.headers.get(key.toLowerCase());
+  ): string | null {
+    const result = this.headers.get(key.toLowerCase());
+    if (result === undefined) {
+      return null;
+    }
+    return result;
   }
 
   set(
