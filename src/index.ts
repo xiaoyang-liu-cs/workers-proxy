@@ -1,7 +1,7 @@
-import Firewall from './firewall';
-import Upstream from './upstream';
-import LoadBalancer from './load-balancer';
-import CORS from './cors';
+import { selectUpstream } from './load-balancer';
+import { getFirewallResponse } from './firewall';
+import { getUpstreamResponse } from './upstream';
+import { getCORSResponse } from './cors';
 import { Configuration } from './types';
 
 class RocketBooster {
@@ -12,30 +12,28 @@ class RocketBooster {
   }
 
   async apply(request: Request): Promise<Response | null> {
-    const firewall = new Firewall(
+    const firewallResponse = getFirewallResponse(
+      request,
       this.config.firewall,
     );
-    const firewallResponse = firewall.getResponse(request);
     if (firewallResponse instanceof Response) {
       return firewallResponse;
     }
 
-    const loadBalancer = new LoadBalancer(
+    const upstream = selectUpstream(
       this.config.upstream,
       this.config.network,
     );
-    const upstream = new Upstream(
-      loadBalancer.select(),
+    const upstreamResponse = await getUpstreamResponse(
+      request,
+      upstream,
       this.config.optimization,
     );
-    const upstreamResponse = await upstream.getResponse(request);
 
-    const cors = new CORS(
-      this.config.cors,
-    );
-    const corsResponse = cors.transformResponse(
+    const corsResponse = getCORSResponse(
       request,
       upstreamResponse,
+      this.config.cors,
     );
 
     return corsResponse;
