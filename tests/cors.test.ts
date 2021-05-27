@@ -1,6 +1,27 @@
-import CORS from '../src/cors';
+import { getCORSResponse } from '../src/cors';
 
 describe('cors.ts -> transformResponse()', () => {
+  test('undefined options', () => {
+    const request = new Request(
+      'https://httpbin.org/post',
+      {
+        headers: new Headers({
+          origin: 'https://httpbin.org',
+        }),
+        method: 'GET',
+      },
+    );
+    const response = new Response(
+      'Test response body',
+      {
+        headers: new Headers(),
+        status: 200,
+      },
+    );
+    const undefinedOptions = getCORSResponse(request, response);
+    expect(undefinedOptions).toBe(response);
+  });
+
   test('Access-Control-Max-Age', () => {
     const request = new Request(
       'https://httpbin.org/post',
@@ -19,18 +40,16 @@ describe('cors.ts -> transformResponse()', () => {
       },
     );
 
-    const corsInvalidMaxAge = new CORS({
+    const invalidMaxAge = getCORSResponse(request, response, {
       origin: true,
       maxAge: 86400.5,
     });
-    const invalidMaxAge = corsInvalidMaxAge.transformResponse(request, response);
     expect(invalidMaxAge.headers.has('Access-Control-Max-Age')).toBeFalsy();
 
-    const corsMaxAge = new CORS({
+    const maxAge = getCORSResponse(request, response, {
       origin: true,
       maxAge: 86400,
     });
-    const maxAge = corsMaxAge.transformResponse(request, response);
     expect(maxAge.headers.get('Access-Control-Max-Age')).toEqual('86400');
   });
 
@@ -52,18 +71,16 @@ describe('cors.ts -> transformResponse()', () => {
       },
     );
 
-    const corsNoCredentials = new CORS({
+    const noCredentials = getCORSResponse(request, response, {
       origin: true,
       credentials: false,
     });
-    const noCredentials = corsNoCredentials.transformResponse(request, response);
     expect(noCredentials.headers.has('Access-Control-Allow-Credentials')).toBeFalsy();
 
-    const corsCredentials = new CORS({
+    const credentials = getCORSResponse(request, response, {
       origin: true,
       credentials: true,
     });
-    const credentials = corsCredentials.transformResponse(request, response);
     expect(credentials.headers.get('Access-Control-Allow-Credentials')).toEqual('true');
   });
 
@@ -86,18 +103,22 @@ describe('cors.ts -> transformResponse()', () => {
       },
     );
 
-    const corsMethodUndefined = new CORS({
+    const methodUndefined = getCORSResponse(request, response, {
       origin: true,
     });
-    const methodUndefined = corsMethodUndefined.transformResponse(request, response);
     expect(methodUndefined.headers.get('Access-Control-Allow-Methods')).toEqual('GET');
 
-    const corsMethodList = new CORS({
+    const methodList = getCORSResponse(request, response, {
       origin: true,
       methods: ['GET', 'POST', 'OPTIONS'],
     });
-    const methodList = corsMethodList.transformResponse(request, response);
     expect(methodList.headers.get('Access-Control-Allow-Methods')).toEqual('GET,POST,OPTIONS');
+
+    const methodWildcard = getCORSResponse(request, response, {
+      origin: true,
+      methods: '*',
+    });
+    expect(methodWildcard.headers.get('Access-Control-Allow-Methods')).toEqual('*');
   });
 
   test('Access-Control-Allow-Origin', () => {
@@ -119,28 +140,27 @@ describe('cors.ts -> transformResponse()', () => {
       },
     );
 
-    const corsOriginTrue = new CORS({
+    const originTrue = getCORSResponse(request, response, {
       origin: true,
     });
-    const originTrue = corsOriginTrue.transformResponse(request, response);
     expect(originTrue.headers.get('Access-Control-Allow-Origin')).toEqual('https://httpbin.org');
 
-    const corsOriginFalse = new CORS({
+    const originFalse = getCORSResponse(request, response, {
       origin: false,
     });
-    const originFalse = corsOriginFalse.transformResponse(request, response);
     expect(originFalse.headers.has('Access-Control-Allow-Origin')).toBeFalsy();
 
-    const corsOriginArray = new CORS({
-      origin: ['https://httpbin.org', 'http://example.com'],
+    const originArray = getCORSResponse(request, response, {
+      origin: [
+        'https://httpbin.org',
+        'http://example.com',
+      ],
     });
-    const originArray = corsOriginArray.transformResponse(request, response);
     expect(originArray.headers.get('Access-Control-Allow-Origin')).toEqual('https://httpbin.org');
 
-    const corsOriginWildcard = new CORS({
+    const originWildcard = getCORSResponse(request, response, {
       origin: '*',
     });
-    const originWildcard = corsOriginWildcard.transformResponse(request, response);
     expect(originWildcard.headers.get('Access-Control-Allow-Origin')).toEqual('*');
   });
 });
