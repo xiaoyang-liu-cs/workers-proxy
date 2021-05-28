@@ -1,6 +1,6 @@
 import { getCORSResponse } from '../src/cors';
 
-describe('cors.ts -> transformResponse()', () => {
+describe('cors.ts -> getCORSResponse()', () => {
   test('undefined options', () => {
     const request = new Request(
       'https://httpbin.org/post',
