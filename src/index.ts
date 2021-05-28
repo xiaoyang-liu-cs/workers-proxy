@@ -2,6 +2,7 @@ import { selectUpstream } from './load-balancer';
 import { getFirewallResponse } from './firewall';
 import { getUpstreamResponse } from './upstream';
 import { getCORSResponse } from './cors';
+import { getErrorResponse } from './error';
 import { Configuration } from './types';
 
 class RocketBooster {
@@ -30,9 +31,15 @@ class RocketBooster {
       this.config.optimization,
     );
 
+    const errorResponse = await getErrorResponse(
+      upstreamResponse,
+      upstream,
+      this.config.error,
+    );
+
     const corsResponse = getCORSResponse(
       request,
-      upstreamResponse,
+      errorResponse,
       this.config.cors,
     );
 

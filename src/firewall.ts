@@ -137,7 +137,7 @@ export const getFirewallResponse = (
 ): Response | null => {
   const firewallRules: FirewallOptions[] = [];
   if (Array.isArray(firewallOptions)) {
-    firewallRules.concat(firewallOptions);
+    firewallRules.push(...firewallOptions);
   } else if (firewallOptions !== undefined) {
     firewallRules.push(firewallOptions);
   }
