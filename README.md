@@ -1,8 +1,8 @@
-[![Header](https://raw.githubusercontent.com/rocket-booster/rocket-booster/master/.github/img/header.png)](https://github.com//rocket-booster/rocket-booster)
+![Header](https://raw.githubusercontent.com/rocket-booster/rocket-booster/master/.github/img/header.png)
 
 <div align="center">
 
-![GitHub Actions](https://img.shields.io/github/workflow/status/rocket-booster/rocket-booster/Node.js%20Test%20and%20Build?style=for-the-badge&logo=github)
+[![GitHub Actions](https://img.shields.io/github/workflow/status/rocket-booster/rocket-booster/Node.js%20Test%20and%20Build?style=for-the-badge&logo=github)](https://github.com/rocket-booster/rocket-booster/actions)
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/rocket-booster/rocket-booster?style=for-the-badge&logo=codecov)](https://app.codecov.io/gh/rocket-booster/rocket-booster/)
 [![Package version](https://img.shields.io/npm/v/rocket-booster?style=for-the-badge&logo=npm&color=red)](https://www.npmjs.com/package/rocket-booster)
 [![Bundle size](https://img.shields.io/bundlephobia/min/rocket-booster?style=for-the-badge&logo=webpack)](https://www.npmjs.com/package/rocket-booster)
@@ -18,53 +18,94 @@
 
 </div>
 
-**Rocket Booster** is the edge-rendered speed booster for web applications, storage platforms, and RESTful APIs. It's a reverse proxy that sits in front of web servers, intercepting requests from clients.
+**Rocket Booster** is the edge-rendered speed booster for web applications, storage platforms, and RESTful APIs. It's a reverse proxy that sits in front of web servers, intercepting requests from clients, and transforming responses by adding several optimizations, such as HTTP/3 with QUIC, Brotli Compression, and 0-RTT Connection Resumption, to improve critical loading times.
 
-- Performance: Deploy to a network of data centers powered by Cloudflare.
-- Serverless: No VMs, no servers, and no containers to spin up or manage.
+- Performance: Deploy to a network of global data centers powered by Cloudflare.
+- Serverless: No virtual machines, servers, or containers to spin up or manage.
 - Optimization: Minify HTML/CSS/JS files, compress images, cache static assets.
 - Cross-Origin: Add necessary CORS headers to the proxied response.
-- Firewall: Block traffics from specific IP addresses, countries, or User-Agent.
+- Firewall: Block traffics from specific IP addresses, countries, or known bots.
 - Network: Enable HTTPS, HTTP/3 (with QUIC), TLS 1.3, and IPv6 for web applications.
 - Load Balance: Distribute incoming traffics evenly among different servers.
 
 ## Build and Deploy
 
-1. [Install Wrangler CLI](https://github.com/cloudflare/wrangler#installation)
+### Integrate with existing project
+
+- Install Rocket Booster with NPM
 
 ```sh
-npm install @cloudflare/wrangler -g
+npm install --save rocket-booster
 ```
 
-2. Generate from [rocket-booster-template](https://github.com/rocket-booster/rocket-booster-template)
+- Import the `RocketBooster` class from `rocket-booster` and instantiate the class with a configuration object. The `apply()` function takes an inbound [Request](https://developers.cloudflare.com/workers/runtime-apis/request) to the Worker, and returns the [Response](https://developers.cloudflare.com/workers/runtime-apis/request) from the upstream server.
+
+```ts
+import RocketBooster from 'rocket-booster';
+
+const config = {
+  upstream: {
+    domain:  'example.com',
+    protocol: 'https',
+  },
+};
+
+addEventListener('fetch', (event) => {
+  const booster = new RocketBooster(config);
+  const response = booster.apply(event.request);
+  event.respondWith(response);
+});
+```
+
+- Change the configuartion object to modify the response. For example, the configuration below will add the header `Access-Control-Allow-Origin: *` to each response from the upstream server, which allows any origin to access the server.
+
+```ts
+const config = {
+  upstream: {
+    domain:  'example.com',
+    protocol: 'https',
+  },
+
+  cors: {
+    origin: '*',
+  },
+};
+```
+
+### Start from scratch
+
+- [Install Wrangler CLI](https://github.com/cloudflare/wrangler#installation)
+
+```sh
+npm install -g @cloudflare/wrangler
+```
+
+- Generate from [rocket-booster-template](https://github.com/rocket-booster/rocket-booster-template)
 
 ```sh
 wrangler generate booster https://github.com/rocket-booster/rocket-booster-template
 ```
 
-3. Install dependencies
+- Install dependencies
 
 ```sh
 cd booster
-
 npm install
 ```
 
-4. Authenticate Wrangler with a Cloudflare API Token
+- Authenticate Wrangler with a Cloudflare API Token
 
 ```sh
 wrangler login
-
 wrangler config
 ```
 
-5. Edit `src/index.js` to configure Rocket Booster
+- Edit `src/index.js` to configure Rocket Booster
 
-6. Build and publish to Cloudflare Workers
+- Build and publish to Cloudflare Workers
 
 ```sh
 wrangler build
-
 wrangler publish
 ```
 
@@ -141,29 +182,35 @@ Several optimizations are enabled by default.
 
 ### Cross-Origin Resource Sharing (CORS)
 
-- `origins`: The origins to allow requests from.
-- `methods`: The methods which the origins are allowed to access.
-- `allowHeaders`: Headers to accept from the client.
-- `exposeHeaders`: Give explicit permissions for the client to read headers in CORS responses.
-- `credentials`: Inject the `Access-Control-Allow-Credentials` header in responses.
-- `maxAge`: Specify the value in seconds for how long the response to the preflight request can be cached for.
+- `origin`: Configures the `Access-Control-Allow-Origin` CORS header. Possible values:
+  - `boolean`: set to `true` to reflect the request origin, or set to `false` to disable CORS.
+  - `string[]`: an array of acceptable origins.
+  - `*`: allow any origin to access the resource.
+
+- `methods`: Configures the `Access-Control-Allow-Methods` CORS header. Expects an array of valid HTTP methods or `*`. If not specified, defaults to reflecting the method specified in the request’s `Access-Control-Request-Method` header.
+
+- `allowedHeaders`: Configures the `Access-Control-Allow-Headers` CORS header. Expects an array of HTTP headers or *. If not specified, defaults to reflecting the headers specified in the request’s `Access-Control-Request-Headers` header.
+
+- `exposedHeaders`: Configures the `Access-Control-Expose-Headers` CORS header. Expects an array of HTTP headers or `*`. If not specified, no custom headers are exposed.
+
+- `credentials`: Configures the `Access-Control-Allow-Credentials` CORS header. Set to true to pass the header, otherwise it is omitted.
+
+- `maxAge`: Configures the `Access-Control-Max-Age` CORS header. Set to an integer to pass the header, otherwise it is omitted.
 
 ```ts
 const config = {
   /* ... */
   cors: {
-    origins: [
-      'https://example.com',
-    ],
+    origin: true,
     methods: [
       'GET',
       'POST',
     ],
     allowHeaders: [
-      'X-Forwarded-For',
+      'Example-Header',
     ],
     exposeHeaders: [
-      'X-Forwarded-For',
+      'Example-Header',
     ],
     credentials: true,
     maxAge: 86400,
@@ -171,21 +218,49 @@ const config = {
 };
 ```
 
-## Contribute
+### Custom Error Response
 
-- `Feature Request`: Create an issue with the **Feature request** template.
-- `Bug Reports`: Create an issue with the **Bug report** template.
-- `Improvements to the booster.js`: Fork the repository, edit code, deploy it to Cloudflare Workers, and then create a pull request.
-- `Add Config Examples`: Fork the repository, write an example config for any website, save it to the `examples` directory, and then create a pull request.
+- `origin`: The HTTP status code to return a custom error response to the client. Excepts a valid HTTP status code or an array of valid status code.
+
+- `responsePath`: The path and file name of the custom error page for this HTTP status code. For example: `/error-pages/403-forbidden.html`
+
+- `responseCode`: The HTTP status code to return to the client along with the custom error page. If not specified, defaults to the original error code.
+
+```ts
+const config = {
+  /* ... */
+  error: {
+    errorCode: 404,
+    responsePath: '/404.html',
+  },
+};
+```
+
+To customize the response of multiple error codes, pass an array of error response objects to `error`.
+
+```ts
+const config = {
+  /* ... */
+  error: [
+    {
+      errorCode: 404,
+      responsePath: '/404.html',
+    },
+    {
+      errorCode: [500, 501, 502, 503],
+      responsePath: '/500.html',
+      responseCode: 500,
+    },
+  ],
+};
+```
+
+## Contributing
+
+- **Request a feature**: Create an issue with the **Feature request** template.
+- **Report bugs**: Create an issue with the **Bug report** template.
+- **Add new feature or fix bugs**: Fork this repository, edit code, and send a pull request.
 
 ### Current contributors
 
 [![Contributors](https://contributors-img.web.app/image?repo=rocket-booster/rocket-booster)](https://github.com/rocket-booster/rocket-booster/graphs/contributors)
-
-## Support Rocket Booster
-
-We accept donations through these channels:
-
-- [Buy Me a Coffee](https://www.buymeacoffee.com/xiaoyangliu)
-- Bitcoin: 1Eb4n6eEyyKjbu3feA9oAQAnZo1K46UvXN
-- Ethereum: 0x16145d98625c0b2aa265773970ca090bf783d5ae

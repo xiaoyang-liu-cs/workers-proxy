@@ -47,6 +47,7 @@ export interface CORSOptions {
    * - boolean - set to `true` to reflect the request origin,
    * or set to `false` to disable CORS.
    * - string[] - an array of acceptable origins.
+   * - `*` - allow any origin to access the resource
    */
   origin?: boolean | string[] | '*';
 
