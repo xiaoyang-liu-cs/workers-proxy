@@ -7,17 +7,10 @@ const cloneRequest = (
   upstream: UpstreamOptions,
   optimization?: OptimizationOptions,
 ): Request => {
-  const cloneHeaders = new Headers(request.headers);
-  if (upstream.headers !== undefined) {
-    for (const [name, value] of Object.entries(upstream.headers)) {
-      cloneHeaders.set(name, value);
-    }
-  }
-
   const requestInit: CfRequestInit = {
     body: request.body,
     method: request.method,
-    headers: cloneHeaders,
+    headers: request.headers,
     redirect: 'follow',
   };
 
