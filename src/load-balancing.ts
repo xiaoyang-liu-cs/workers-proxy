@@ -1,10 +1,10 @@
-import { UpstreamOptions, NetworkOptions } from './types';
+import { UpstreamOptions, LoadBalancingOptions } from './types';
 
 export const selectUpstream = (
   upstreamOptions: UpstreamOptions | UpstreamOptions[],
-  networkOptions?: NetworkOptions,
+  loadBalancingOptions?: LoadBalancingOptions,
 ): UpstreamOptions => {
-  const method = networkOptions === undefined ? 'random' : networkOptions.loadBalancingMethod;
+  const method = loadBalancingOptions === undefined ? 'random' : loadBalancingOptions.method;
   const upstream = Array.isArray(upstreamOptions) ? upstreamOptions : [upstreamOptions];
   if (method === 'random') {
     return upstream[Math.floor(Math.random() * upstream.length)];

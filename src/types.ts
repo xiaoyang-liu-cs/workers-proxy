@@ -6,9 +6,6 @@ export interface UpstreamOptions {
   port?: number;
   path?: string;
   timeout?: number;
-  headers?: {
-    [key: string]: string;
-  };
   retry?: number;
   weight?: number;
 }
@@ -87,10 +84,12 @@ export interface CORSOptions {
   maxAge?: number;
 }
 
-export type LoadBalancingMethod = 'round-robin' | 'ip-hash' | 'random';
-export interface NetworkOptions {
-  loadBalancingMethod?: LoadBalancingMethod;
-  websocket?: boolean;
+export interface LoadBalancingOptions {
+  method?: 'round-robin' | 'ip-hash' | 'random';
+}
+
+export interface HeaderOptions {
+  [key: string]: string;
 }
 
 export interface CacheOptions {
@@ -111,7 +110,9 @@ export interface Configuration {
   firewall?: FirewallOptions | FirewallOptions[];
   error?: ErrorOptions | ErrorOptions[];
   cors?: CORSOptions;
-  network?: NetworkOptions;
   cache?: CacheOptions;
   optimization?: OptimizationOptions;
+  loadBalancing?: LoadBalancingOptions;
+  headerUp?: HeaderOptions;
+  headerDown?: HeaderOptions;
 }

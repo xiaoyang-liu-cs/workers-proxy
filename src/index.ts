@@ -1,4 +1,4 @@
-import { selectUpstream } from './load-balancer';
+import { selectUpstream } from './load-balance';
 import { getFirewallResponse } from './firewall';
 import { getUpstreamResponse } from './upstream';
 import { getCORSResponse } from './cors';
