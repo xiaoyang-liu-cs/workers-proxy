@@ -89,11 +89,44 @@ export interface LoadBalancingOptions {
 }
 
 export interface HeaderOptions {
-  [key: string]: string;
-}
+  /**
+   * Sets request header going upstream to the backend.
+   */
+  request?: {
+    [key: string]: string;
+  };
 
-export interface CacheOptions {
-  cacheEverything?: boolean;
+  /**
+   * Sets response header coming downstream to the client.
+   */
+  response?: {
+    [key: string]: string;
+  };
+
+  /**
+   * Removes the `X-Powered-By` header, which is set by default
+   * in some frameworks such as Express.
+   */
+  hidePoweredBy?: boolean;
+
+  /**
+   * Sets the `X-Download-Options` header, which is specific to Internet Explorer 8.
+   * It forces potentially-unsafe downloads to be saved, mitigating execution of HTML
+   * in your site's context.
+   */
+  ieNoOpen?: boolean;
+
+  /**
+   * Sets the `X-XSS-Protection` header to `0`
+   * to disable browsers' buggy cross-site scripting filter.
+   */
+  xssFilter?: boolean;
+
+  /**
+   * Sets the `X-Content-Type-Options` header to `nosniff`.
+   * This mitigates MIME type sniffing which can cause security vulnerabilities.
+   */
+  noSniff?: boolean;
 }
 
 export interface OptimizationOptions {
@@ -110,9 +143,7 @@ export interface Configuration {
   firewall?: FirewallOptions | FirewallOptions[];
   error?: ErrorOptions | ErrorOptions[];
   cors?: CORSOptions;
-  cache?: CacheOptions;
   optimization?: OptimizationOptions;
   loadBalancing?: LoadBalancingOptions;
-  headerUp?: HeaderOptions;
-  headerDown?: HeaderOptions;
+  header?: HeaderOptions;
 }
