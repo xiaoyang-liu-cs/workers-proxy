@@ -55,15 +55,20 @@ test('headers.ts -> setResponseHeaders()', () => {
     },
   );
 
-  const headersResponse = setResponseHeaders(response, {
-    response: {
-      'X-Test': 'Test header',
+  const headersResponse = setResponseHeaders(
+    response,
+    {
+      response: {
+        'X-Test': 'Test header',
+      },
     },
-    noSniff: true,
-    xssFilter: true,
-    hidePoweredBy: true,
-    ieNoOpen: true,
-  });
+    {
+      noSniff: true,
+      xssFilter: true,
+      hidePoweredBy: true,
+      ieNoOpen: true,
+    },
+  );
 
   expect(headersResponse.headers.has('X-Powered-By')).toEqual(false);
   expect(headersResponse.headers.get('X-Test')).toEqual('Test header');

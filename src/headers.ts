@@ -1,4 +1,4 @@
-import { HeaderOptions } from './types';
+import { HeaderOptions, SecurityOptions } from './types';
 
 export const setForwardedHeaders = (
   request: Request,
@@ -24,22 +24,27 @@ export const setForwardedHeaders = (
 export const setRequestHeaders = (
   request: Request,
   headerOptions?: HeaderOptions,
-): void => {
+  securityOptions?: SecurityOptions,
+): Request => {
   if (headerOptions === undefined || headerOptions.request === undefined) {
-    return;
+    return request;
   }
 
-  setForwardedHeaders(request);
+  if (securityOptions?.forwarded) {
+    setForwardedHeaders(request);
+  }
   for (const [key, value] of Object.entries(headerOptions.request)) {
     request.headers.set(key, value);
   }
+  return request;
 };
 
 export const setResponseHeaders = (
   response: Response,
   headerOptions?: HeaderOptions,
+  securityOptions?: SecurityOptions,
 ): Response => {
-  if (headerOptions === undefined) {
+  if (securityOptions === undefined) {
     return response;
   }
 
@@ -52,7 +57,7 @@ export const setResponseHeaders = (
     noSniff,
     hidePoweredBy,
     ieNoOpen,
-  } = headerOptions;
+  } = securityOptions;
 
   if (xssFilter) {
     headers.set('X-XSS-Protectio', '0');
@@ -70,7 +75,10 @@ export const setResponseHeaders = (
     headers.set('X-Download-Options', 'noopen');
   }
 
-  if (headerOptions.response !== undefined) {
+  if (
+    headerOptions !== undefined
+    && headerOptions.response !== undefined
+  ) {
     for (const [key, value] of Object.entries(headerOptions.response)) {
       headers.set(key, value);
     }

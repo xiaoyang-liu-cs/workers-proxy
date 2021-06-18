@@ -22,16 +22,18 @@ class RocketBooster {
       return firewallResponse;
     }
 
-    setRequestHeaders(
+    const headersRequest = setRequestHeaders(
       request,
       this.config.header,
+      this.config.security,
     );
+
     const upstream = selectUpstream(
       this.config.upstream,
       this.config.loadBalancing,
     );
     const upstreamResponse = await getUpstreamResponse(
-      request,
+      headersRequest,
       upstream,
       this.config.optimization,
     );
