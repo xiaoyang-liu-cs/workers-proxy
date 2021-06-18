@@ -8,8 +8,8 @@ updates:
     time: "12:00"
   open-pull-requests-limit: 10
   reviewers:
-  - xiaoyang-liu-cs
+  - xiaoyang-sde
   assignees:
-  - xiaoyang-liu-cs
+  - xiaoyang-sde
   labels:
   - dependencies

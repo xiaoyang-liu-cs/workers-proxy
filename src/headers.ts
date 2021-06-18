@@ -30,7 +30,10 @@ export const setRequestHeaders = (
     return request;
   }
 
-  if (securityOptions?.forwarded) {
+  if (
+    securityOptions !== undefined
+    && securityOptions.forwarded
+  ) {
     setForwardedHeaders(request);
   }
   for (const [key, value] of Object.entries(headerOptions.request)) {
