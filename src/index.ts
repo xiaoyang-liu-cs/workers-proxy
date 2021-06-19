@@ -13,7 +13,7 @@ class RocketBooster {
     this.config = config;
   }
 
-  async apply(request: Request): Promise<Response | null> {
+  async apply(request: Request): Promise<Response> {
     const firewallResponse = getFirewallResponse(
       request,
       this.config.firewall,
@@ -37,6 +37,13 @@ class RocketBooster {
       upstream,
       this.config.optimization,
     );
+
+    if (
+      upstreamResponse.status === 101
+      && upstreamResponse.headers.get('upgrade') === 'websocket'
+    ) {
+      return upstreamResponse;
+    }
 
     const errorResponse = await getErrorResponse(
       upstreamResponse,

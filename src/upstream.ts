@@ -4,7 +4,6 @@ import { UpstreamOptions, OptimizationOptions } from './types';
 const cloneRequest = (
   url: string,
   request: Request,
-  upstream: UpstreamOptions,
   optimization?: OptimizationOptions,
 ): Request => {
   const requestInit: CfRequestInit = {
@@ -75,7 +74,6 @@ export const getUpstreamResponse = async (
   const upstreamRequest = cloneRequest(
     url,
     request,
-    upstream,
     optimization,
   );
 

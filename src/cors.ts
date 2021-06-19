@@ -18,14 +18,14 @@ export const getCORSResponse = (
     maxAge,
   } = corsOptions;
 
-  const corsHeaders = new Headers(
-    response.headers,
-  );
-
   const requestOrigin = request.headers.get('origin');
   if (requestOrigin === null || origin === false) {
     return response;
   }
+
+  const corsHeaders = new Headers(
+    response.headers,
+  );
 
   if (origin === true) {
     corsHeaders.set('Access-Control-Allow-Origin', requestOrigin);
