@@ -1,9 +1,9 @@
-![Header](https://raw.githubusercontent.com/rocket-booster/rocket-booster/master/.github/img/header.png)
+![Header](https://raw.githubusercontent.com/boosters-lab/rocket-booster/master/.github/img/header.png)
 
 <div align="center">
 
-[![GitHub Actions](https://img.shields.io/github/workflow/status/rocket-booster/rocket-booster/Node.js%20Test%20and%20Build?style=for-the-badge&logo=github)](https://github.com/rocket-booster/rocket-booster/actions)
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/rocket-booster/rocket-booster?style=for-the-badge&logo=codecov)](https://app.codecov.io/gh/rocket-booster/rocket-booster/)
+[![GitHub Actions](https://img.shields.io/github/workflow/status/boosters-lab/rocket-booster/Node.js%20Test%20and%20Build?style=for-the-badge&logo=github)](https://github.com/boosters-lab/rocket-booster/actions)
+[![Codecov Coverage](https://img.shields.io/codecov/c/github/boosters-lab/rocket-booster?style=for-the-badge&logo=codecov)](https://app.codecov.io/gh/boosters-lab/rocket-booster/)
 [![Package version](https://img.shields.io/npm/v/rocket-booster?style=for-the-badge&logo=npm&color=red)](https://www.npmjs.com/package/rocket-booster)
 [![Bundle size](https://img.shields.io/bundlephobia/min/rocket-booster?style=for-the-badge&logo=webpack)](https://www.npmjs.com/package/rocket-booster)
 
@@ -11,7 +11,7 @@
 [![forthebadge](https://forthebadge.com/images/badges/ctrl-c-ctrl-v.svg)](https://forthebadge.com)
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
-[Releases](https://github.com/rocket-booster/rocket-booster/releases) |
+[Releases](https://github.com/boosters-lab/rocket-booster/releases) |
 [Examples](#examples) |
 [Contribute](#contribute) |
 [Buy Me a Coffee](https://www.buymeacoffee.com/xiaoyangliu)
@@ -85,10 +85,10 @@ wrangler publish
 npm install -g @cloudflare/wrangler
 ```
 
-- Generate from [rocket-booster-template](https://github.com/rocket-booster/rocket-booster-template)
+- Generate from [rocket-booster-template](https://github.com/boosters-lab/rocket-booster-template)
 
 ```sh
-wrangler generate booster https://github.com/rocket-booster/rocket-booster-template
+wrangler generate booster https://github.com/boosters-lab/rocket-booster-template
 ```
 
 - Install dependencies
