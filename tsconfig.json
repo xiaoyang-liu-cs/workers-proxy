@@ -1,17 +1,18 @@
 {
   "compilerOptions": {
     "outDir": "./dist",
-    "module": "esnext",
-    "target": "esnext",
+    "module": "ES2020",
+    "target": "ES2020",
     "moduleResolution": "node",
     "lib": [
-      "esnext",
-      "webworker"
+      "ES2020",
+      "WebWorker"
     ],
     "types": [
       "jest",
       "@cloudflare/workers-types"
     ],
+    "allowJs": false,
     "alwaysStrict": true,
     "strict": true,
     "preserveConstEnums": true,
@@ -20,6 +21,12 @@
     "noImplicitReturns": true,
     "noUnusedLocals": true,
     "declaration": true,
+    "noUnusedParameters": true,
+    "noFallthroughCasesInSwitch": true,
+    "forceConsistentCasingInFileNames": true,
+    "suppressImplicitAnyIndexErrors": true,
+    "allowSyntheticDefaultImports": true,
+    "experimentalDecorators": true
   },
   "include": [
     "src/*.ts",

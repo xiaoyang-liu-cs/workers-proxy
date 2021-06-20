@@ -7,7 +7,8 @@
   "scripts": {
     "test": "jest --coverage",
     "lint": "eslint --fix src/* --ext .ts",
-    "build": "webpack"
+    "build": "webpack",
+    "prepare": "npm run lint && npm run build"
   },
   "repository": {
     "type": "git",

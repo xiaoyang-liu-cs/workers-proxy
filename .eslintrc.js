@@ -1,7 +1,8 @@
 module.exports = {
   env: {
-    worker: true,
     es2021: true,
+    jest: true,
+    worker: true,
   },
   settings: {
     'import/resolver': {
