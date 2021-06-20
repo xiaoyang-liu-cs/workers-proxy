@@ -24,6 +24,7 @@ module.exports = {
     new CleanWebpackPlugin(),
     new ESLintPlugin({
       extensions: ['ts'],
+      cache: true,
     }),
   ],
   module: {
@@ -33,5 +34,11 @@ module.exports = {
         loader: 'ts-loader',
       },
     ],
+  },
+  cache: {
+    type: 'filesystem',
+    buildDependencies: {
+      config: [__filename],
+    },
   },
 };
