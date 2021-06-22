@@ -12,10 +12,9 @@
 [![forthebadge](https://forthebadge.com/images/badges/built-with-love.svg)](https://forthebadge.com)
 
 [Releases](https://github.com/booster-labs/rocket-booster/releases) |
+[Examples](#examples) |
 [Configuration](#configuration) |
-[Contribute](#contribute) |
-[Buy Me a Coffee](https://www.buymeacoffee.com/xiaoyangliu)
-
+[Contribute](#contribute)
 </div>
 
 **Rocket Booster** is a serverless reverse proxy and load balancer library built for [Cloudflare Workers](https://workers.cloudflare.com). It sits in front of web servers (e.g. web application, storage platform, or RESTful API), forwards requests from clients to upstream servers, and transforms responses with several optimizations to improve critical loading times.
@@ -31,17 +30,18 @@
 
 ### Integrate with existing project
 
-- Install Rocket Booster with NPM
+- Install the `rocket-booster` package
 
 ```sh
 npm install --save rocket-booster
 ```
 
-- Import the `RocketBooster` class from `rocket-booster` and instantiate the class with a configuration object. The `apply()` function takes an inbound [Request](https://developers.cloudflare.com/workers/runtime-apis/request) to the Worker, and returns the [Response](https://developers.cloudflare.com/workers/runtime-apis/request) from the upstream server.
+- Import the `RocketBooster` class from `rocket-booster` and instantiate the class with a configuration object. The `apply()` function takes an inbound [Request](https://developers.cloudflare.com/workers/runtime-apis/request) to the Worker, and returns the [Response](https://developers.cloudflare.com/workers/runtime-apis/request) fetched from the upstream server.
 
 ```ts
 import RocketBooster from 'rocket-booster';
 
+// Create a reverse proxy for 'https://example.com'
 const config = {
   upstream: {
     domain:  'example.com',
@@ -56,15 +56,17 @@ addEventListener('fetch', (event) => {
 });
 ```
 
-- Change the configuartion object to modify the response. For example, the configuration below will add the header `Access-Control-Allow-Origin: *` to each response from the upstream server, which allows any origin to access the server.
+- Edit the configuartion object to change the request and response. For example, the configuration below will add the header `Access-Control-Allow-Origin: *` to each response from the upstream server, which allows any origin to access the server.
 
 ```ts
+// Create a reverse proxy for 'https://example.com'
 const config = {
   upstream: {
     domain:  'example.com',
     protocol: 'https',
   },
   cors: {
+    // Set the 'Access-Control-Allow-Origin' CORS header to '*'.
     origin: '*',
   },
 };
@@ -105,7 +107,7 @@ wrangler login
 wrangler config
 ```
 
-- Edit `src/index.js` to configure Rocket Booster
+- Edit the configuartion object in `src/index.js`
 
 - Build and publish to Cloudflare Workers
 
@@ -119,10 +121,10 @@ wrangler publish
 ### Upstream
 
 - `domain`: The domain name of the upstream server.
-- `protocol`: The protocol scheme of the upstream server. (Optional)
-- `port`: The port of the upstream server. (Optional)
-- `path`: The path of the upstream server. (Optional)
-- `timeout`: The maximum wait time on a request to the upstream server.  (Optional)
+- `protocol`: The protocol scheme of the upstream server. (optional, defaults to `'https'`)
+- `port`: The port of the upstream server. (optional, defaults to `80` or `443` based on `protocol`)
+- `path`: The path of the upstream server. (optional, defaults to `'\'`)
+- `timeout`: The maximum wait time on a request to the upstream server. (optional, defaults to `10000`)
 
 ```ts
 const config = {
@@ -137,7 +139,7 @@ const config = {
 };
 ```
 
-To load balance HTTP traffic to a group of servers, pass an array of server objects to `upstream`. Each request will be passed to a randomly selected server.
+To load balance HTTP traffic to a group of servers, pass an array of server configurations to `upstream`. Each request will be forwarded to a randomly selected server. Other load balancing algorithms will be implemented in the future.
 
 ```ts
 const config = {
@@ -159,10 +161,29 @@ const config = {
 };
 ```
 
+### Custom Headers
+
+- `request`: Sets request header going upstream to the backend. Accepts an object. (optional, defaults to `{}`)
+- `response`: Sets response header coming downstream to the client. Accepts an object. (optional, defaults to `{}`)
+
+```ts
+const config = {
+  /* ... */
+  header: {
+    request: {
+      'x-example-header': 'hello server',
+    },
+    response: {
+      'x-example-header': 'hello client',
+    },
+  },
+};
+```
+
 ### Optimization
 
-- `minify`: Remove unnecessary characters (like whitespace, comments, etc.) from HTML, CSS, and JavaScript files.
-- `mirage`: Detect screen size and connection speed to optimally deliver images for the current browser window.
+- `minify`: Remove unnecessary characters (like whitespace, comments, etc.) from HTML, CSS, and JavaScript files. (optional, defaults to `false`)
+- `mirage`: Detect screen size and connection speed to optimally deliver images for the current browser window. (optional, defaults to `false`)
 
 ```ts
 const config = {
@@ -183,24 +204,45 @@ Several optimizations are enabled by default.
 - [Brotli](https://brotli.org/): Speed up page load times for visitor’s HTTPS traffic by applying Brotli compression.
 - [HTTP/2](https://developers.google.com/web/fundamentals/performance/http2): Improve page load time by connection multiplexing, header compression, and server push.
 - [HTTP/3 with QUIC](https://en.wikipedia.org/wiki/HTTP/3): Accelerate HTTP requests by using QUIC, which provides encryption and performance improvements compared to TCP and TLS.
-- 0-RTT Connection Resumption: Improve performance for clients who have previously connected to the website.
+- [0-RTT Connection Resumption](https://blog.cloudflare.com/introducing-0-rtt/): Improve performance for clients who have previously connected to the website.
+
+### Security
+
+- `forwarded`: Sets the `X-Forwarded-For`, `X-Forwarded-Host`, and `X-Forwarded-Proto` headers. (optional, defaults to `false`)
+- `hidePoweredBy`: Removes the `X-Powered-By` header, which is set by default in some frameworks such as Express. (optional, defaults to `false`)
+- `ieNoOpen`: Sets the `X-Download-Options` header, which is specific to Internet Explorer 8. It forces potentially-unsafe downloads to be saved, mitigating execution of HTML in the website's context. (optional, defaults to `false`)
+- `xssFilter`: Sets the `X-XSS-Protection` header to `0` to disable browsers' buggy cross-site scripting filter. (optional, defaults to `false`)
+- `noSniff`: Sets the `X-Content-Type-Options` header to `nosniff`. This mitigates MIME type sniffing which can cause security vulnerabilities. (optional, defaults to `false`)
+
+```ts
+const config = {
+  /* ... */
+  security: {
+    fowarded: true,
+    hidePoweredBy: true,
+    ieNoOpen: true,
+    xssFilter: true,
+    noSniff: true,
+  },
+};
+```
 
 ### Cross-Origin Resource Sharing (CORS)
 
-- `origin`: Configures the `Access-Control-Allow-Origin` CORS header. Possible values:
+- `origin`: Configures the `Access-Control-Allow-Origin` CORS header. (optional, defaults to `false`)
   - `boolean`: set to `true` to reflect the request origin, or set to `false` to disable CORS.
   - `string[]`: an array of acceptable origins.
   - `*`: allow any origin to access the resource.
 
-- `methods`: Configures the `Access-Control-Allow-Methods` CORS header. Expects an array of valid HTTP methods or `*`. If not specified, defaults to reflecting the method specified in the request’s `Access-Control-Request-Method` header.
+- `methods`: Configures the `Access-Control-Allow-Methods` CORS header. Expects an array of valid HTTP methods or `*`. (optional, defaults to reflecting the method specified in the request’s `Access-Control-Request-Method` header)
 
-- `allowedHeaders`: Configures the `Access-Control-Allow-Headers` CORS header. Expects an array of HTTP headers or *. If not specified, defaults to reflecting the headers specified in the request’s `Access-Control-Request-Headers` header.
+- `allowedHeaders`: Configures the `Access-Control-Allow-Headers` CORS header. Expects an array of HTTP headers or *. (optional, defaults to reflecting the headers specified in the request’s `Access-Control-Request-Headers` header.)
 
-- `exposedHeaders`: Configures the `Access-Control-Expose-Headers` CORS header. Expects an array of HTTP headers or `*`. If not specified, no custom headers are exposed.
+- `exposedHeaders`: Configures the `Access-Control-Expose-Headers` CORS header. Expects an array of HTTP headers or `*`. (optional, defaults to `[]`)
 
-- `credentials`: Configures the `Access-Control-Allow-Credentials` CORS header. Set to true to pass the header, otherwise it is omitted.
+- `credentials`: Configures the `Access-Control-Allow-Credentials` CORS header. Set to true to pass the header, otherwise it is omitted. (optional, defaults to `false`)
 
-- `maxAge`: Configures the `Access-Control-Max-Age` CORS header. Set to an integer to pass the header, otherwise it is omitted.
+- `maxAge`: Configures the `Access-Control-Max-Age` CORS header. Set to an integer to pass the header, otherwise it is omitted. (optional)
 
 ```ts
 const config = {
@@ -225,11 +267,11 @@ const config = {
 
 ### Custom Error Response
 
-- `origin`: The HTTP status code to return a custom error response to the client. Excepts a valid HTTP status code or an array of valid status code.
+- `errorCode`: The HTTP status code to return a custom error response to the client. Excepts a valid HTTP status code or an array of valid status code.
 
 - `responsePath`: The path and file name of the custom error page for this HTTP status code. For example: `/error-pages/403-forbidden.html`
 
-- `responseCode`: The HTTP status code to return to the client along with the custom error page. If not specified, defaults to the original error code.
+- `responseCode`: The HTTP status code to return to the client along with the custom error page. (optional, defaults to the original error code)
 
 ```ts
 const config = {
@@ -265,7 +307,5 @@ const config = {
 - **Request a feature**: Create an issue with the **Feature request** template.
 - **Report bugs**: Create an issue with the **Bug report** template.
 - **Add new feature or fix bugs**: Fork this repository, edit code, and send a pull request.
-
-### Current contributors
 
 [![Contributors](https://contributors-img.web.app/image?repo=rocket-booster/rocket-booster)](https://github.com/rocket-booster/rocket-booster/graphs/contributors)
