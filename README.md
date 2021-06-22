@@ -17,7 +17,7 @@
 [Contribute](#contribute)
 </div>
 
-**Rocket Booster** is a serverless reverse proxy and load balancer library built for [Cloudflare Workers](https://workers.cloudflare.com). It sits in front of web servers (e.g. web application, storage platform, or RESTful API), forwards requests from clients to upstream servers, and transforms responses with several optimizations to improve critical loading times.
+**rocket-booster** is a serverless reverse proxy and load balancer library built for [Cloudflare Workers](https://workers.cloudflare.com). It sits in front of web servers (e.g. web application, storage platform, or RESTful API), forwards HTTP requests or WebSocket traffics from clients to upstream servers and transforms responses with several optimizations to improve page loading time.
 
 - Serverless: Deploy instantly to the auto-scaling serverless platform built by Cloudflare. No virtual machines, servers, or containers to manage.
 - Security: Enable HTTPS, HTTP/3 (with QUIC), TLS 1.3, and IPv6 for web applications.
@@ -56,7 +56,7 @@ addEventListener('fetch', (event) => {
 });
 ```
 
-- Edit the configuartion object to change the request and response. For example, the configuration below will add the header `Access-Control-Allow-Origin: *` to each response from the upstream server, which allows any origin to access the server.
+- Edit the configuration object to change the request and response. For example, the configuration below will add the header `Access-Control-Allow-Origin: *` to each response from the upstream server, which allows any origin to access the server.
 
 ```ts
 // Create a reverse proxy for 'https://example.com'
@@ -107,13 +107,43 @@ wrangler login
 wrangler config
 ```
 
-- Edit the configuartion object in `src/index.js`
+- Edit the configuration object in `src/index.js`
 
 - Build and publish to Cloudflare Workers
 
 ```sh
 wrangler build
 wrangler publish
+```
+
+## Examples
+
+### MDN Web Docs Mirror
+
+```ts
+// Create a reverse proxy for 'https://developer.mozilla.org'
+const config = {
+  upstream: {
+    domain: 'developer.mozilla.org',
+    protocol: 'https',
+  },
+};
+```
+
+[Live Demo](https://mozilla.readme.workers.dev/)
+
+### WebSocket Proxy
+
+`rocket-booster` could proxy WebSocket traffic to upstream servers. No additional configuration is required.
+
+```ts
+// Create a reverse proxy for 'wss://echo.websocket.org'
+const config = {
+  upstream: {
+    domain: 'echo.websocket.org',
+    protocol: 'https',
+  },
+};
 ```
 
 ## Configuration
