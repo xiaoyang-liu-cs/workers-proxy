@@ -155,3 +155,7 @@ export interface Configuration {
   header?: HeaderOptions;
   security?: SecurityOptions;
 }
+
+export interface Proxy {
+ apply: (request: Request) => Promise<Response>
+}
