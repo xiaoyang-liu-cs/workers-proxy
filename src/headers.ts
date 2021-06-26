@@ -1,23 +1,19 @@
 import { HeaderOptions, SecurityOptions } from './types';
 
 export const setForwardedHeaders = (
-  request: Request,
+  headers: Headers,
 ): void => {
-  request.headers.set('X-Forwarded-Proto', 'https');
+  headers.set('X-Forwarded-Proto', 'https');
 
-  const host = request.headers.get('Host');
+  const host = headers.get('Host');
   if (host !== null) {
-    request.headers.set('X-Forwarded-Host', host);
+    headers.set('X-Forwarded-Host', host);
   }
 
-  const ip = request.headers.get('cf-connecting-ip');
-  if (ip !== null) {
-    const forwardedForHeader = request.headers.get('X-Forwarded-For');
-    if (forwardedForHeader === null) {
-      request.headers.set('X-Forwarded-For', ip);
-    } else {
-      request.headers.set('X-Forwarded-For', `${forwardedForHeader}, ${ip}`);
-    }
+  const ip = headers.get('cf-connecting-ip');
+  const forwardedForHeader = headers.get('X-Forwarded-For');
+  if (ip !== null && forwardedForHeader === null) {
+    headers.set('X-Forwarded-For', ip);
   }
 };
 
@@ -26,24 +22,36 @@ export const setRequestHeaders = (
   headerOptions?: HeaderOptions,
   securityOptions?: SecurityOptions,
 ): Request => {
-  if (headerOptions === undefined || headerOptions.request === undefined) {
-    return request;
-  }
+  const headers = new Headers(
+    request.headers,
+  );
 
   if (
     securityOptions !== undefined
-    && securityOptions.forwarded
+    && securityOptions.forwarded !== undefined
   ) {
-    setForwardedHeaders(request);
+    setForwardedHeaders(headers);
   }
-  for (const [key, value] of Object.entries(headerOptions.request)) {
-    request.headers.set(key, value);
+
+  if (
+    headerOptions !== undefined
+    && headerOptions.request !== undefined
+  ) {
+    for (const [key, value] of Object.entries(headerOptions.request)) {
+      headers.set(key, value);
+    }
   }
-  return request;
+
+  return new Request(request.url, {
+    body: request.body,
+    method: request.method,
+    headers,
+  });
 };
 
 export const setResponseHeaders = (
   response: Response,
+  hostname: string,
   headerOptions?: HeaderOptions,
   securityOptions?: SecurityOptions,
 ): Response => {
@@ -60,10 +68,11 @@ export const setResponseHeaders = (
     noSniff,
     hidePoweredBy,
     ieNoOpen,
+    setCookie,
   } = securityOptions;
 
   if (xssFilter) {
-    headers.set('X-XSS-Protectio', '0');
+    headers.set('X-XSS-Protection', '0');
   }
 
   if (noSniff) {
@@ -76,6 +85,27 @@ export const setResponseHeaders = (
 
   if (ieNoOpen) {
     headers.set('X-Download-Options', 'noopen');
+  }
+
+  const setCookieHeader = headers.get('set-cookie');
+  if (
+    setCookieHeader !== null
+    && setCookie
+  ) {
+    const setCookieAttributes = setCookieHeader.split(';').map((attribute) => {
+      if (attribute.toLowerCase().trim().startsWith('domain=')) {
+        return `domain=${hostname}`;
+      }
+      return attribute.trim();
+    });
+    headers.set('Set-Cookie', setCookieAttributes.join(';'));
+  }
+
+  const pjaxHeader = headers.get('x-pjax-url');
+  if (pjaxHeader !== null) {
+    const pjaxUrl = new URL(pjaxHeader);
+    pjaxUrl.hostname = hostname;
+    headers.set('x-pjax-url', pjaxUrl.href);
   }
 
   if (
