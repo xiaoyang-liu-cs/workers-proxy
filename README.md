@@ -36,10 +36,10 @@
 npm install --save rocket-booster
 ```
 
-- Import the `RocketBooster` class from `rocket-booster` and instantiate the class with a configuration object. The `apply()` function takes an inbound [Request](https://developers.cloudflare.com/workers/runtime-apis/request) to the Worker, and returns the [Response](https://developers.cloudflare.com/workers/runtime-apis/request) fetched from the upstream server.
+- Import the `useProxy` function from `rocket-booster` and invoke it with a configuration object. The function returns an object with an `apply()` method, which takes an inbound [Request](https://developers.cloudflare.com/workers/runtime-apis/request) to the Worker, and returns the [Response](https://developers.cloudflare.com/workers/runtime-apis/request) fetched from the upstream server.
 
 ```ts
-import RocketBooster from 'rocket-booster';
+import useProxy from 'rocket-booster';
 
 // Create a reverse proxy for 'https://example.com'
 const config = {
@@ -50,8 +50,8 @@ const config = {
 };
 
 addEventListener('fetch', (event) => {
-  const booster = new RocketBooster(config);
-  const response = booster.apply(event.request);
+  const proxy = useProxy(config);
+  const response = proxy.apply(event.request);
   event.respondWith(response);
 });
 ```
@@ -243,6 +243,7 @@ Several optimizations are enabled by default.
 - `ieNoOpen`: Sets the `X-Download-Options` header, which is specific to Internet Explorer 8. It forces potentially-unsafe downloads to be saved, mitigating execution of HTML in the website's context. (optional, defaults to `false`)
 - `xssFilter`: Sets the `X-XSS-Protection` header to `0` to disable browsers' buggy cross-site scripting filter. (optional, defaults to `false`)
 - `noSniff`: Sets the `X-Content-Type-Options` header to `nosniff`. This mitigates MIME type sniffing which can cause security vulnerabilities. (optional, defaults to `false`)
+- `setCookie`: Sets the `Domain` attribute of the `Set-Cookie` header to the domain of the worker.
 
 ```ts
 const config = {
@@ -253,6 +254,7 @@ const config = {
     ieNoOpen: true,
     xssFilter: true,
     noSniff: true,
+    setCookie: true,
   },
 };
 ```
