@@ -4,12 +4,15 @@ import { setRequestHeaders, setResponseHeaders } from './headers';
 import { getUpstreamResponse } from './upstream';
 import { getCORSResponse } from './cors';
 import { getErrorResponse } from './error';
+import { getHostname } from './utils';
 import { Proxy, Configuration } from './types';
 
-const useProxy = (
+export default function useProxy(
   config: Configuration,
-): Proxy => {
+): Proxy {
   const apply = async (request: Request): Promise<Response> => {
+    const hostname = getHostname(request);
+
     const firewallResponse = getFirewallResponse(
       request,
       config.firewall,
@@ -55,7 +58,9 @@ const useProxy = (
 
     const headersResponse = setResponseHeaders(
       corsResponse,
+      hostname,
       config.header,
+      config.security,
     );
     return headersResponse;
   };
@@ -63,6 +68,4 @@ const useProxy = (
   return {
     apply,
   };
-};
-
-export default useProxy;
+}

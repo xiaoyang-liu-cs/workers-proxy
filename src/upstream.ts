@@ -10,7 +10,6 @@ const cloneRequest = (
     body: request.body,
     method: request.method,
     headers: request.headers,
-    redirect: 'follow',
   };
 
   if (optimization !== undefined) {
@@ -85,8 +84,8 @@ export const getUpstreamResponse = async (
     return response;
   } catch (error) {
     return createResponse(
-      'Error: Request Timeout',
-      408,
+      error,
+      500,
     );
   }
 };
