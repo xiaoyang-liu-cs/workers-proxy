@@ -51,6 +51,7 @@ test('headers.ts -> setResponseHeaders()', () => {
     {
       headers: new Headers({
         'X-Powered-By': 'Express',
+        'X-PJAX-URL': 'https://test.com/pjax',
         'Set-Cookie': 'cookie_1=test; domain=<domain-value>; secure; samesite=strict; cookie_2=test; domain=<domain-value>; secure; httpOnly;',
       }),
     },
@@ -78,6 +79,7 @@ test('headers.ts -> setResponseHeaders()', () => {
   expect(headersResponse.headers.get('X-XSS-Protection')).toEqual('0');
   expect(headersResponse.headers.get('X-Content-Type-Options')).toEqual('nosniff');
   expect(headersResponse.headers.get('X-Download-Options')).toEqual('noopen');
+  expect(headersResponse.headers.get('X-PJAX-URL')).toEqual('https://httpbin.org/pjax');
 
   const cookie = 'cookie_1=test;domain=httpbin.org;secure;samesite=strict;cookie_2=test;domain=httpbin.org;secure;httpOnly;';
   expect(headersResponse.headers.get('Set-Cookie')).toEqual(cookie);
