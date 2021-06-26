@@ -19,7 +19,15 @@ const createResponse = (
   status,
 });
 
+const getHostname = (
+  request: Request,
+): string => {
+  const url = new URL(request.url);
+  return url.host;
+};
+
 export {
   isMobile,
   createResponse,
+  getHostname,
 };

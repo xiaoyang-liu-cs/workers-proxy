@@ -1,4 +1,8 @@
-import { isMobile, createResponse } from '../src/utils';
+import {
+  isMobile,
+  createResponse,
+  getHostname,
+} from '../src/utils';
 
 test('utils.ts -> createResponse()', () => {
   const response = createResponse(
@@ -40,4 +44,11 @@ test('utils.ts -> isMobile()', () => {
   userAgents.forEach(([userAgent, result]) => {
     expect(isMobile(userAgent)).toEqual(result);
   });
+});
+
+test('utils.ts -> getHostname()', () => {
+  const url = 'https://developer.mozilla.org:443/en-US/docs/';
+  const request = new Request(url);
+  const hostname = getHostname(request);
+  expect(hostname).toEqual('developer.mozilla.org');
 });

@@ -1,4 +1,6 @@
 class FakeResponse {
+  url?: string
+
   body?: string
 
   headers?: Headers
@@ -16,6 +18,8 @@ class FakeResponse {
     },
   ) {
     this.body = body;
+    this.url = body;
+
     if (init !== undefined) {
       const {
         status,

@@ -2,16 +2,28 @@ class FakeHeaders {
   private headers: Map<string, string>;
 
   constructor(
-    init?: {
+    init?: FakeHeaders | {
       [key: string]: string,
     },
   ) {
     this.headers = new Map();
-    if (init !== undefined) {
+    if (init instanceof FakeHeaders) {
+      for (const [key, value] of init.headers.entries()) {
+        this.headers.set(key, value);
+      }
+    } else if (init !== undefined) {
       for (const [key, value] of Object.entries(init)) {
         this.headers.set(key.toLowerCase(), value);
       }
     }
+  }
+
+  toString(): string {
+    const result = [];
+    for (const [key, value] of this.headers) {
+      result.push(`${key}: ${value}`);
+    }
+    return result.join('\n');
   }
 
   get(
