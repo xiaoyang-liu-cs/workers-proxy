@@ -1,6 +1,6 @@
 {
   "name": "rocket-booster",
-  "version": "1.2.0",
+  "version": "1.2.1",
   "description": "The edge-rendered speed booster for web applications, storage platforms, and RESTful APIs.",
   "main": "dist/index.js",
   "types": "dist/index.d.js",
