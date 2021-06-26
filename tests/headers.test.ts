@@ -17,10 +17,10 @@ test('headers.ts -> setForwardedHeaders()', () => {
     },
   );
 
-  setForwardedHeaders(request);
+  setForwardedHeaders(request.headers);
   expect(request.headers.get('X-Forwarded-Proto')).toEqual('https');
   expect(request.headers.get('X-Forwarded-Host')).toEqual('https://httpbin.org');
-  expect(request.headers.get('X-Forwarded-For')).toEqual('127.0.0.1, 127.0.0.2, 1.1.1.1');
+  expect(request.headers.get('X-Forwarded-For')).toEqual('127.0.0.1, 127.0.0.2');
 });
 
 test('headers.ts -> setRequestHeaders()', () => {
@@ -34,15 +34,15 @@ test('headers.ts -> setRequestHeaders()', () => {
     },
   );
 
-  setRequestHeaders(request, {
+  const headersRequest = setRequestHeaders(request, {
     request: {
       'X-Test': 'Test header',
       'X-Forwarded-For': 'Test override',
     },
   });
 
-  expect(request.headers.get('X-Test')).toEqual('Test header');
-  expect(request.headers.get('X-Forwarded-For')).toEqual('Test override');
+  expect(headersRequest.headers.get('X-Test')).toEqual('Test header');
+  expect(headersRequest.headers.get('X-Forwarded-For')).toEqual('Test override');
 });
 
 test('headers.ts -> setResponseHeaders()', () => {
@@ -58,6 +58,7 @@ test('headers.ts -> setResponseHeaders()', () => {
 
   const headersResponse = setResponseHeaders(
     response,
+    'httpbin.org',
     {
       response: {
         'X-Test': 'Test header',
