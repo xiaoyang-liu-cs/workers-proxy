@@ -1,7 +1,7 @@
 import { createResponse } from './utils';
 import { UpstreamOptions, OptimizationOptions } from './types';
 
-const cloneRequest = (
+export const cloneRequest = (
   url: string,
   request: Request,
   optimization?: OptimizationOptions,
@@ -21,7 +21,7 @@ const cloneRequest = (
   return new Request(url, requestInit);
 };
 
-const getURL = (
+export const getURL = (
   url: string,
   upstream: UpstreamOptions,
 ): string => {
@@ -47,7 +47,7 @@ const getURL = (
   return cloneURL.href;
 };
 
-const sendRequest = async (
+export const sendRequest = async (
   request: Request,
   timeout: number,
 ): Promise<Response> => {
