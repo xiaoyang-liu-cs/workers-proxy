@@ -4,14 +4,14 @@ import {
   getHostname,
 } from '../src/utils';
 
-test('utils.ts -> createResponse()', () => {
+test('utils.ts -> createResponse()', async () => {
   const response = createResponse(
     'Test response body',
     403,
   );
   expect(response.status).toEqual(403);
   expect(response.ok).toEqual(false);
-  expect(response.body).toEqual('Test response body');
+  await expect(response.text()).resolves.toEqual('Test response body');
 });
 
 test('utils.ts -> isMobile()', () => {

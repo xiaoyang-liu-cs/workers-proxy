@@ -14,7 +14,7 @@ describe('cors.ts -> getCORSResponse()', () => {
     const response = new Response(
       'Test response body',
       {
-        headers: new Headers(),
+        headers: new Headers({}),
         status: 200,
       },
     );
@@ -35,7 +35,7 @@ describe('cors.ts -> getCORSResponse()', () => {
     const response = new Response(
       'Test response body',
       {
-        headers: new Headers(),
+        headers: new Headers({}),
         status: 200,
       },
     );
@@ -66,7 +66,7 @@ describe('cors.ts -> getCORSResponse()', () => {
     const response = new Response(
       'Test response body',
       {
-        headers: new Headers(),
+        headers: new Headers({}),
         status: 200,
       },
     );
@@ -98,7 +98,7 @@ describe('cors.ts -> getCORSResponse()', () => {
     const response = new Response(
       'Test response body',
       {
-        headers: new Headers(),
+        headers: new Headers({}),
         status: 200,
       },
     );
@@ -135,7 +135,7 @@ describe('cors.ts -> getCORSResponse()', () => {
     const response = new Response(
       'Test response body',
       {
-        headers: new Headers(),
+        headers: new Headers({}),
         status: 200,
       },
     );

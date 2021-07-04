@@ -46,8 +46,8 @@ test('error.ts -> getErrorResponse()', async () => {
     upstreamOption,
     errorOption2,
   );
-  expect(errorResponse2.body).toEqual('Test error response body');
   expect(errorResponse2.status).toEqual(403);
+  await expect(errorResponse2.text()).resolves.toEqual('Test error response body');
 
   const errorOption3 = [{
     errorCode: 400,
@@ -58,6 +58,6 @@ test('error.ts -> getErrorResponse()', async () => {
     upstreamOption,
     errorOption3,
   );
-  expect(errorResponse3.body).toEqual('Test error response body');
   expect(errorResponse3.status).toEqual(400);
+  await expect(errorResponse3.text()).resolves.toEqual('Test error response body');
 });

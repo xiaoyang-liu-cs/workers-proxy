@@ -4,4 +4,5 @@ module.exports = {
   setupFilesAfterEnv: [
     '<rootDir>/tests/setup.ts',
   ],
+  collectCoverage: true,
 };
