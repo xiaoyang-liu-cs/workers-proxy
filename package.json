@@ -34,7 +34,7 @@
     "@typescript-eslint/eslint-plugin": "^4.28.0",
     "@typescript-eslint/parser": "^4.28.0",
     "clean-webpack-plugin": "^4.0.0-alpha.0",
-    "eslint": "^7.29.0",
+    "eslint": "^7.30.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
     "eslint-webpack-plugin": "^2.5.4",
@@ -42,7 +42,7 @@
     "service-worker-mock": "^2.0.5",
     "ts-jest": "^27.0.3",
     "ts-loader": "^9.2.3",
-    "typescript": "^4.3.4",
+    "typescript": "^4.3.5",
     "webpack": "^5.40.0",
     "webpack-cli": "^4.7.2"
   }
