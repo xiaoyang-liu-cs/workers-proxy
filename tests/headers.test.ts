@@ -86,6 +86,7 @@ test('headers.ts -> setResponseHeaders()', () => {
         hidePoweredBy: true,
         ieNoOpen: true,
         setCookie: true,
+        forwarded: true,
       },
     },
   };
