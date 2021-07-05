@@ -1,5 +1,6 @@
 import { Middleware } from '../types/middleware';
-import { ErrorOptions, UpstreamOptions } from './types';
+import { ErrorOptions } from '../types/custom-error';
+import { UpstreamOptions } from '../types/upstream';
 import { getURL, sendRequest } from './upstream';
 
 const checkErrorCode = (

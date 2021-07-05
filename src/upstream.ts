@@ -1,5 +1,6 @@
 import { createResponse } from './utils';
-import { UpstreamOptions, OptimizationOptions } from './types';
+import { UpstreamOptions } from '../types/upstream';
+import { OptimizationOptions } from '../types/optimization';
 import { Middleware } from '../types/middleware';
 
 export const cloneRequest = (

@@ -1,5 +1,9 @@
 import { createResponse } from './utils';
-import { FirewallOptions, FirewallFields, FirewallOperators } from './types';
+import {
+  FirewallOptions,
+  FirewallFields,
+  FirewallOperators,
+} from '../types/firewall';
 import { Middleware } from '../types/middleware';
 
 const getFieldParam = (

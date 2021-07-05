@@ -9,7 +9,7 @@ import { useCORS } from './cors';
 import { getHostname } from './utils';
 import { usePipeline } from './middleware';
 
-import { Proxy, Configuration } from './types';
+import { Proxy, Configuration } from '../types/index';
 import { Context } from '../types/middleware';
 
 export default function useProxy(

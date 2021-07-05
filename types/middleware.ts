@@ -1,11 +1,12 @@
-import { Configuration, UpstreamOptions } from '../src/types';
+import { Configuration } from './index';
+import { UpstreamOptions } from './upstream';
 
 export interface Context {
-  hostname: string,
-  request: Request,
-  response: Response,
-  options: Configuration
-  upstream: UpstreamOptions | null,
+  hostname: string;
+  request: Request;
+  response: Response;
+  options: Configuration;
+  upstream: UpstreamOptions | null;
 }
 
 export type Middleware = (
