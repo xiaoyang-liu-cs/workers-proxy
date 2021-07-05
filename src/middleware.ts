@@ -1,17 +1,17 @@
 import { Pipeline, Middleware } from '../types/middleware';
 
-const usePipeline = <Context>(
-  ...initMiddlewares: Middleware<Context>[]
-): Pipeline<Context> => {
-  const stack: Middleware<Context>[] = [...initMiddlewares];
+export const usePipeline = (
+  ...initMiddlewares: Middleware[]
+): Pipeline => {
+  const stack: Middleware[] = [...initMiddlewares];
 
-  const push: Pipeline<Context>['push'] = (
-    ...middlewares: Middleware<Context>[]
+  const push: Pipeline['push'] = (
+    ...middlewares: Middleware[]
   ) => {
     stack.push(...middlewares);
   };
 
-  const execute: Pipeline<Context>['execute'] = async (context) => {
+  const execute: Pipeline['execute'] = async (context) => {
     const runner = async (
       prevIndex: number,
       index: number,
@@ -36,5 +36,3 @@ const usePipeline = <Context>(
     execute,
   };
 };
-
-export default usePipeline;

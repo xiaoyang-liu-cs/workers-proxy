@@ -1,4 +1,4 @@
-import { HeaderOptions, SecurityOptions } from './types';
+import { Middleware } from '../types/middleware';
 
 export const setForwardedHeaders = (
   headers: Headers,
@@ -17,22 +17,22 @@ export const setForwardedHeaders = (
   }
 };
 
-export const setRequestHeaders = (
-  request: Request,
-  headerOptions?: HeaderOptions,
-  securityOptions?: SecurityOptions,
-): Request => {
-  const headers = new Headers(
-    request.headers,
-  );
+export const useRequestHeaders: Middleware = (
+  context,
+  next,
+) => {
+  const { request, options } = context;
 
+  const securityOptions = options.security;
+  const headers = new Headers(request.headers);
   if (
     securityOptions !== undefined
-    && securityOptions.forwarded !== undefined
+    && securityOptions.forwarded === true
   ) {
     setForwardedHeaders(headers);
   }
 
+  const headerOptions = options.header;
   if (
     headerOptions !== undefined
     && headerOptions.request !== undefined
@@ -42,21 +42,22 @@ export const setRequestHeaders = (
     }
   }
 
-  return new Request(request.url, {
+  context.request = new Request(request.url, {
     body: request.body,
     method: request.method,
     headers,
   });
+  return next();
 };
 
-export const setResponseHeaders = (
-  response: Response,
-  hostname: string,
-  headerOptions?: HeaderOptions,
-  securityOptions?: SecurityOptions,
-): Response => {
+export const useResponseHeaders: Middleware = (
+  context,
+  next,
+) => {
+  const { response, hostname, options } = context;
+  const securityOptions = options.security;
   if (securityOptions === undefined) {
-    return response;
+    return next();
   }
 
   const headers = new Headers(
@@ -108,6 +109,7 @@ export const setResponseHeaders = (
     headers.set('x-pjax-url', pjaxUrl.href);
   }
 
+  const headerOptions = options.header;
   if (
     headerOptions !== undefined
     && headerOptions.response !== undefined
@@ -117,7 +119,7 @@ export const setResponseHeaders = (
     }
   }
 
-  return new Response(
+  context.response = new Response(
     response.body,
     {
       status: response.status,
@@ -125,4 +127,5 @@ export const setResponseHeaders = (
       headers,
     },
   );
+  return next();
 };

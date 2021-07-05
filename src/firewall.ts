@@ -1,5 +1,6 @@
 import { createResponse } from './utils';
 import { FirewallOptions, FirewallFields, FirewallOperators } from './types';
+import { Middleware } from '../types/middleware';
 
 const getFieldParam = (
   request: Request,
@@ -131,15 +132,20 @@ const parseFirewallRule = (
   return null;
 };
 
-export const getFirewallResponse = (
-  request: Request,
-  firewallOptions?: FirewallOptions | FirewallOptions[],
-): Response | null => {
+export const useFirewall: Middleware = (
+  context,
+  next,
+) => {
+  const { request, options } = context;
+  if (options.firewall === undefined) {
+    return next();
+  }
+
   const firewallRules: FirewallOptions[] = [];
-  if (Array.isArray(firewallOptions)) {
-    firewallRules.push(...firewallOptions);
-  } else if (firewallOptions !== undefined) {
-    firewallRules.push(firewallOptions);
+  if (Array.isArray(options.firewall)) {
+    firewallRules.push(...options.firewall);
+  } else {
+    firewallRules.push(options.firewall);
   }
 
   for (const { field, operator, value } of firewallRules) {
@@ -155,8 +161,10 @@ export const getFirewallResponse = (
     );
 
     if (response !== null) {
-      return response;
+      context.response = response;
+      return null;
     }
   }
-  return null;
+
+  return next();
 };

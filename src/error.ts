@@ -1,5 +1,6 @@
+import { Middleware } from '../types/middleware';
 import { ErrorOptions, UpstreamOptions } from './types';
-import { getUpstreamResponse } from './upstream';
+import { getURL, sendRequest } from './upstream';
 
 const checkErrorCode = (
   response: Response,
@@ -16,24 +17,27 @@ const getErrorPage = async (
   responsePath: string,
   responseCode: number,
 ): Promise<Response> => {
-  const request = new Request(`https://example.com/${responsePath}`);
-  const response = await getUpstreamResponse(
-    request,
-    upstream,
+  const url = getURL(`https://example.com/${responsePath}`, upstream);
+  const timeout = upstream.timeout || 10000;
+  const request = new Request(url);
+  const response = await sendRequest(request, timeout);
+  return new Response(
+    response.body,
+    {
+      status: responseCode,
+      headers: response.headers,
+    },
   );
-  return new Response(response.body, {
-    status: responseCode,
-    headers: response.headers,
-  });
 };
 
-export const getErrorResponse = async (
-  response: Response,
-  upstream: UpstreamOptions,
-  errorOptions?: ErrorOptions | ErrorOptions[],
-): Promise<Response> => {
-  if (errorOptions === undefined) {
-    return response;
+export const useCustomError: Middleware = async (
+  context,
+  next,
+) => {
+  const { response, options, upstream } = context;
+  const errorOptions = options.error;
+  if (errorOptions === undefined || upstream === null) {
+    return next();
   }
 
   const errorRules: ErrorOptions[] = [];
@@ -43,18 +47,21 @@ export const getErrorResponse = async (
     errorRules.push(errorOptions);
   }
 
-  for (const errorRule of errorRules) {
+  for await (const errorRule of errorRules) {
     const {
       errorCode,
       responsePath,
-      responseCode,
+      responseCode = response.status,
     } = errorRule;
     if (checkErrorCode(response, errorCode)) {
-      if (responseCode === undefined) {
-        return getErrorPage(upstream, responsePath, response.status);
-      }
-      return getErrorPage(upstream, responsePath, responseCode);
+      context.response = await getErrorPage(
+        upstream,
+        responsePath,
+        responseCode,
+      );
+      break;
     }
   }
-  return response;
+
+  return next();
 };

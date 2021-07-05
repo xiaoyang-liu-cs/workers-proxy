@@ -1,5 +1,6 @@
 import { createResponse } from './utils';
 import { UpstreamOptions, OptimizationOptions } from './types';
+import { Middleware } from '../types/middleware';
 
 export const cloneRequest = (
   url: string,
@@ -60,32 +61,39 @@ export const sendRequest = async (
   return response;
 };
 
-export const getUpstreamResponse = async (
-  request: Request,
-  upstream: UpstreamOptions,
-  optimization?: OptimizationOptions,
-): Promise<Response> => {
+export const useUpstream: Middleware = async (
+  context,
+  next,
+) => {
+  const { request, upstream, options } = context;
+  if (upstream === null) {
+    return null;
+  }
+
   const timeout = upstream.timeout || 10000;
   const url = getURL(
     request.url,
     upstream,
   );
+
+  const optimizationOptions = options.optimization;
   const upstreamRequest = cloneRequest(
     url,
     request,
-    optimization,
+    optimizationOptions,
   );
 
   try {
-    const response = await sendRequest(
+    context.response = await sendRequest(
       upstreamRequest,
       timeout,
     );
-    return response;
+    return next();
   } catch (error) {
-    return createResponse(
+    context.response = createResponse(
       error,
       500,
     );
+    return null;
   }
 };
