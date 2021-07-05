@@ -45,6 +45,7 @@ export const getURL = (
   if (protocol !== undefined) {
     cloneURL.protocol = `${protocol}:`;
   }
+
   return cloneURL.href;
 };
 

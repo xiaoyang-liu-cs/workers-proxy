@@ -3,7 +3,7 @@ import { useRequestHeaders, useResponseHeaders } from './headers';
 import { useSelectUpstream } from './load-balancing';
 import { useWebSocket } from './websocket';
 import { useUpstream } from './upstream';
-import { useCustomError } from './error';
+import { useCustomError } from './custom-error';
 import { useCORS } from './cors';
 
 import { getHostname } from './utils';

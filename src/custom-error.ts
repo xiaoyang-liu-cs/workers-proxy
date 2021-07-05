@@ -62,6 +62,5 @@ export const useCustomError: Middleware = async (
       break;
     }
   }
-
   return next();
 };
