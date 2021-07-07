@@ -42,10 +42,28 @@ const getFieldParam = (
 const parseFirewallRule = (
   fieldParam: string | number | null,
   operator: FirewallOperators,
-  value: string | string[] | number | number[],
+  value: string | string[] | number | number[] | RegExp,
 ): Response | null => {
   if (fieldParam === null) {
     return null;
+  }
+
+  if (
+    (value instanceof RegExp && operator !== 'match')
+    || (!(value instanceof RegExp) && operator === 'match')
+  ) {
+    throw new Error('You must use match operator for regular expression');
+  }
+
+  if (
+    value instanceof RegExp
+    && operator === 'match'
+    && value.test(fieldParam.toString())
+  ) {
+    return createResponse(
+      'You don\'t have permission to access this service.',
+      403,
+    );
   }
 
   if (
