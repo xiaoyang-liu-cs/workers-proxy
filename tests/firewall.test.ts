@@ -1,92 +1,139 @@
 import {
-  setForwardedHeaders,
-  setRequestHeaders,
-  setResponseHeaders,
-} from '../src/headers';
-
-import {
   getFieldParam,
   parseFirewallRule,
-  getFirewallResponse,
+  useFirewall
 } from '../src/firewall';
 
-test('headers.ts -> setForwardedHeaders()', () => {
-  const request = new Request(
-    'https://httpbin.org/get',
-    {
-      headers: new Headers({
-        host: 'https://httpbin.org',
-        'cf-connecting-ip': '1.1.1.1',
-        'X-Forwarded-For': '127.0.0.1, 127.0.0.2',
-      }),
-      method: 'GET',
-    },
-  );
+import { Context } from '../types/middleware';
 
-  setForwardedHeaders(request.headers);
-  expect(request.headers.get('X-Forwarded-Proto')).toEqual('https');
-  expect(request.headers.get('X-Forwarded-Host')).toEqual('https://httpbin.org');
-  expect(request.headers.get('X-Forwarded-For')).toEqual('127.0.0.1, 127.0.0.2');
+import {
+  FirewallOptions,
+  FirewallFields,
+  FirewallOperators,
+} from '../types/firewall';
+
+const request = new Request(
+  'https://httpbin.org/get',
+  {
+    headers: new Headers({
+      host: 'https://httpbin.org',
+      'cf-connecting-ip': '1.1.1.1',
+      'X-Forwarded-For': '127.0.0.1, 127.0.0.2',
+    }),
+    method: 'GET',
+  },
+);
+
+test('firewall.ts -> getFieldParam()', () => {
+  const firewall = [
+    {
+      field: 'ip' as FirewallFields,
+      operator: 'equal',
+      value: '',
+    },
+    {
+      field: 'hostname' as FirewallFields,
+      operator: 'equal',
+      value: '',
+    },
+  ]
+  expect(getFieldParam(request, firewall[0].field)).toEqual('1.1.1.1');
+  expect(getFieldParam(request, firewall[1].field)).toEqual('https://httpbin.org');
 });
 
-test('headers.ts -> setRequestHeaders()', () => {
-  const request = new Request(
-    'https://httpbin.org/get',
+test('firewall.ts -> parseFirewallRule()', () => {
+  const firewall = [
     {
-      headers: new Headers({
-        'cf-connecting-ip': '1.1.1.1',
-      }),
-      method: 'GET',
+      field: 'ip' as FirewallFields,
+      operator: 'equal' as FirewallOperators,
+      value: '1.1.1.1',
     },
+    {
+      field: 'hostname' as FirewallFields,
+      operator: 'equal' as FirewallOperators,
+      value: '',
+    },
+  ]
+  const response1 = parseFirewallRule(
+    (getFieldParam(request, firewall[0].field)),
+    firewall[0].operator,
+    firewall[0].value,
   );
-
-  const headersRequest = setRequestHeaders(request, {
-    request: {
-      'X-Test': 'Test header',
-      'X-Forwarded-For': 'Test override',
-    },
-  });
-
-  expect(headersRequest.headers.get('X-Test')).toEqual('Test header');
-  expect(headersRequest.headers.get('X-Forwarded-For')).toEqual('Test override');
+  const response2 = parseFirewallRule(
+    (getFieldParam(request, firewall[1].field)),
+    firewall[1].operator,
+    firewall[1].value,
+  );
+  expect(response1 !== null);
+  expect(response2 === null);
 });
 
-test('headers.ts -> setResponseHeaders()', () => {
-  const response = new Response(
-    'https://httpbin.org/get',
+test('firewall.ts -> useFirewall()', () => {
+  const firewall : FirewallOptions[] = [
     {
-      headers: new Headers({
-        'X-Powered-By': 'Express',
-        'X-PJAX-URL': 'https://test.com/pjax',
-        'Set-Cookie': 'cookie_1=test; domain=<domain-value>; secure; samesite=strict; cookie_2=test; domain=<domain-value>; secure; httpOnly;',
-      }),
+      field: 'ip' as FirewallFields,
+      operator: 'match' as FirewallOperators,
+      value: new RegExp('^1'),
     },
-  );
-
-  const headersResponse = setResponseHeaders(
-    response,
-    'httpbin.org',
-    {
-      response: {
-        'X-Test': 'Test header',
+  ]
+  const context: Context = {
+    request: request,
+    response: new Response(),
+    hostname: 'https://httpbin.org',
+    upstream: null,
+    options: {
+      upstream: {
+        domain: 'httpbin.org',
       },
+      header: {
+        request: {
+          'X-Test': 'Test header',
+          'X-Forwarded-For': 'Test override',
+        },
+      },
+      firewall: firewall
     },
+  };
+  useFirewall(context, () => null);
+  expect(context.response.status !== 200);
+});
+
+test('firewall.ts -> useFirewall()', () => {
+  const firewall : FirewallOptions[] = [
     {
-      noSniff: true,
-      xssFilter: true,
-      hidePoweredBy: true,
-      ieNoOpen: true,
-      setCookie: true,
+      field: 'ip' as FirewallFields,
+      operator: 'match' as FirewallOperators,
+      value: new RegExp('^1'),
     },
-  );
-
-  expect(headersResponse.headers.has('X-Powered-By')).toEqual(false);
-  expect(headersResponse.headers.get('X-Test')).toEqual('Test header');
-  expect(headersResponse.headers.get('X-XSS-Protection')).toEqual('0');
-  expect(headersResponse.headers.get('X-Content-Type-Options')).toEqual('nosniff');
-  expect(headersResponse.headers.get('X-Download-Options')).toEqual('noopen');
-  expect(headersResponse.headers.get('X-PJAX-URL')).toEqual('https://httpbin.org/pjax');
-
-  const cookie = 'cookie_1=test;domain=httpbin.org;secure;samesite=strict;cookie_2=test;domain=httpbin.org;secure;httpOnly;';
-  expect(headersResponse.headers.get('Set-Cookie')).toEqual(cookie);
+  ]
+  const context: Context = {
+    request: new Request(
+      'https://httpbin.org/get',
+      {
+        headers: new Headers({
+          host: 'https://httpbin.org',
+          'cf-connecting-ip': '255.1.1.1',
+          'X-Forwarded-For': '127.0.0.1, 127.0.0.2',
+        }),
+        method: 'GET',
+      },
+    ),
+    response: new Response(),
+    hostname: 'https://httpbin.org',
+    upstream: null,
+    options: {
+      upstream: {
+        domain: 'httpbin.org',
+      },
+      header: {
+        request: {
+          'X-Test': 'Test header',
+          'X-Forwarded-For': 'Test override',
+        },
+      },
+      firewall: firewall
+    },
+  };
+  useFirewall(context, () => null);
+  expect(context.response.status === 200);
 });

@@ -3,5 +3,5 @@ export type FirewallOperators = 'equal' | 'not equal' | 'greater' | 'less' | 'in
 export interface FirewallOptions {
   field: FirewallFields;
   operator: FirewallOperators;
-  value: string | string[] | number | number[];
+  value: string | string[] | number | number[] | RegExp;
 }

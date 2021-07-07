@@ -6,7 +6,7 @@ import {
 } from '../types/firewall';
 import { Middleware } from '../types/middleware';
 
-const getFieldParam = (
+export const getFieldParam = (
   request: Request,
   field: FirewallFields,
 ): string | number | null => {
@@ -39,7 +39,7 @@ const getFieldParam = (
   return null;
 };
 
-const parseFirewallRule = (
+export const parseFirewallRule = (
   fieldParam: string | number | null,
   operator: FirewallOperators,
   value: string | string[] | number | number[] | RegExp,
