@@ -8,8 +8,6 @@ import { Context } from '../types/middleware';
 
 import {
   FirewallOptions,
-  FirewallFields,
-  FirewallOperators,
 } from '../types/firewall';
 
 const request = new Request(
