@@ -135,8 +135,8 @@ test('firewall.ts -> parseFirewallRule()', () => {
 test('firewall.ts -> useFirewall()', () => {
   const firewall : FirewallOptions[] = [
     {
-      field: 'ip' as FirewallFields,
-      operator: 'match' as FirewallOperators,
+      field: 'ip',
+      operator: 'match',
       value: new RegExp('^1'),
     },
   ];
@@ -159,8 +159,8 @@ test('firewall.ts -> useFirewall()', () => {
 test('firewall.ts -> useFirewall()', () => {
   const firewall : FirewallOptions[] = [
     {
-      field: 'ip' as FirewallFields,
-      operator: 'match' as FirewallOperators,
+      field: 'ip',
+      operator: 'match',
       value: new RegExp('^1'),
     },
   ];
