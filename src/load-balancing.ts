@@ -1,13 +1,14 @@
-import { UpstreamOptions, LoadBalancingOptions } from './types';
+import { Middleware } from '../types/middleware';
 
-export const selectUpstream = (
-  upstreamOptions: UpstreamOptions | UpstreamOptions[],
-  loadBalancingOptions?: LoadBalancingOptions,
-): UpstreamOptions => {
-  const method = loadBalancingOptions === undefined ? 'random' : loadBalancingOptions.method;
+export const useSelectUpstream: Middleware = (
+  context,
+  next,
+) => {
+  const { options } = context;
+  const upstreamOptions = options.upstream;
+
   const upstream = Array.isArray(upstreamOptions) ? upstreamOptions : [upstreamOptions];
-  if (method === 'random') {
-    return upstream[Math.floor(Math.random() * upstream.length)];
-  }
-  return upstream[0];
+  context.upstream = upstream[Math.floor(Math.random() * upstream.length)];
+
+  return next();
 };

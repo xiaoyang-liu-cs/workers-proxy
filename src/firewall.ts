@@ -1,7 +1,12 @@
 import { createResponse } from './utils';
-import { FirewallOptions, FirewallFields, FirewallOperators } from './types';
+import {
+  FirewallOptions,
+  FirewallFields,
+  FirewallOperators,
+} from '../types/firewall';
+import { Middleware } from '../types/middleware';
 
-const getFieldParam = (
+export const getFieldParam = (
   request: Request,
   field: FirewallFields,
 ): string | number | null => {
@@ -34,13 +39,31 @@ const getFieldParam = (
   return null;
 };
 
-const parseFirewallRule = (
+export const parseFirewallRule = (
   fieldParam: string | number | null,
   operator: FirewallOperators,
-  value: string | string[] | number | number[],
+  value: string | string[] | number | number[] | RegExp,
 ): Response | null => {
   if (fieldParam === null) {
     return null;
+  }
+
+  if (
+    (value instanceof RegExp && operator !== 'match')
+    || (!(value instanceof RegExp) && operator === 'match')
+  ) {
+    throw new Error('You must use match operator for regular expression');
+  }
+
+  if (
+    value instanceof RegExp
+    && operator === 'match'
+    && value.test(fieldParam.toString())
+  ) {
+    return createResponse(
+      'You don\'t have permission to access this service.',
+      403,
+    );
   }
 
   if (
@@ -120,7 +143,7 @@ const parseFirewallRule = (
     operator === 'not contain'
   && typeof fieldParam === 'string'
   && typeof value === 'string'
-  && fieldParam.includes(value)
+  && !fieldParam.includes(value)
   ) {
     return createResponse(
       'You don\'t have permission to access this service.',
@@ -131,15 +154,20 @@ const parseFirewallRule = (
   return null;
 };
 
-export const getFirewallResponse = (
-  request: Request,
-  firewallOptions?: FirewallOptions | FirewallOptions[],
-): Response | null => {
+export const useFirewall: Middleware = (
+  context,
+  next,
+) => {
+  const { request, options } = context;
+  if (options.firewall === undefined) {
+    return next();
+  }
+
   const firewallRules: FirewallOptions[] = [];
-  if (Array.isArray(firewallOptions)) {
-    firewallRules.push(...firewallOptions);
-  } else if (firewallOptions !== undefined) {
-    firewallRules.push(firewallOptions);
+  if (Array.isArray(options.firewall)) {
+    firewallRules.push(...options.firewall);
+  } else {
+    firewallRules.push(options.firewall);
   }
 
   for (const { field, operator, value } of firewallRules) {
@@ -155,8 +183,10 @@ export const getFirewallResponse = (
     );
 
     if (response !== null) {
-      return response;
+      context.response = response;
+      return null;
     }
   }
-  return null;
+
+  return next();
 };

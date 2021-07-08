@@ -1,68 +1,42 @@
-import { selectUpstream } from './load-balancing';
-import { getFirewallResponse } from './firewall';
-import { setRequestHeaders, setResponseHeaders } from './headers';
-import { getUpstreamResponse } from './upstream';
-import { getCORSResponse } from './cors';
-import { getErrorResponse } from './error';
+import { useFirewall } from './firewall';
+import { useRequestHeaders, useResponseHeaders } from './headers';
+import { useSelectUpstream } from './load-balancing';
+import { useWebSocket } from './websocket';
+import { useUpstream } from './upstream';
+import { useCustomError } from './custom-error';
+import { useCORS } from './cors';
+
 import { getHostname } from './utils';
-import { Proxy, Configuration } from './types';
+import { usePipeline } from './middleware';
+
+import { Proxy, Configuration } from '../types/index';
+import { Context } from '../types/middleware';
 
 export default function useProxy(
-  config: Configuration,
+  options: Configuration,
 ): Proxy {
+  const pipeline = usePipeline(
+    useFirewall,
+    useRequestHeaders,
+    useSelectUpstream,
+    useUpstream,
+    useWebSocket,
+    useCustomError,
+    useCORS,
+    useResponseHeaders,
+  );
+
   const apply = async (request: Request): Promise<Response> => {
-    const hostname = getHostname(request);
-
-    const firewallResponse = getFirewallResponse(
+    const context: Context = {
+      options,
       request,
-      config.firewall,
-    );
-    if (firewallResponse !== null) {
-      return firewallResponse;
-    }
+      hostname: getHostname(request),
+      response: new Response('Unhandled response'),
+      upstream: null,
+    };
 
-    const headersRequest = setRequestHeaders(
-      request,
-      config.header,
-      config.security,
-    );
-
-    const upstream = selectUpstream(
-      config.upstream,
-      config.loadBalancing,
-    );
-    const upstreamResponse = await getUpstreamResponse(
-      headersRequest,
-      upstream,
-      config.optimization,
-    );
-
-    if (
-      upstreamResponse.status === 101
-      && upstreamResponse.headers.get('upgrade') === 'websocket'
-    ) {
-      return upstreamResponse;
-    }
-
-    const errorResponse = await getErrorResponse(
-      upstreamResponse,
-      upstream,
-      config.error,
-    );
-
-    const corsResponse = getCORSResponse(
-      request,
-      errorResponse,
-      config.cors,
-    );
-
-    const headersResponse = setResponseHeaders(
-      corsResponse,
-      hostname,
-      config.header,
-      config.security,
-    );
-    return headersResponse;
+    await pipeline.execute(context);
+    return context.response;
   };
 
   return {

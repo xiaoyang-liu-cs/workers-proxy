@@ -1,12 +1,14 @@
-import { CORSOptions } from './types';
+import { Middleware } from '../types/middleware';
 
-export const getCORSResponse = (
-  request: Request,
-  response: Response,
-  corsOptions?: CORSOptions,
-): Response => {
+export const useCORS: Middleware = (
+  context,
+  next,
+) => {
+  const { request, response, options } = context;
+
+  const corsOptions = options.cors;
   if (corsOptions === undefined) {
-    return response;
+    return next();
   }
 
   const {
@@ -20,7 +22,7 @@ export const getCORSResponse = (
 
   const requestOrigin = request.headers.get('origin');
   if (requestOrigin === null || origin === false) {
-    return response;
+    return next();
   }
 
   const corsHeaders = new Headers(
@@ -73,7 +75,7 @@ export const getCORSResponse = (
     corsHeaders.set('Access-Control-Max-Age', maxAge.toString());
   }
 
-  return new Response(
+  context.response = new Response(
     response.body,
     {
       status: response.status,
@@ -81,4 +83,5 @@ export const getCORSResponse = (
       headers: corsHeaders,
     },
   );
+  return next();
 };

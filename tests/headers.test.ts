@@ -1,8 +1,9 @@
 import {
   setForwardedHeaders,
-  setRequestHeaders,
-  setResponseHeaders,
+  useRequestHeaders,
+  useResponseHeaders,
 } from '../src/headers';
+import { Context } from '../types/middleware';
 
 test('headers.ts -> setForwardedHeaders()', () => {
   const request = new Request(
@@ -24,63 +25,80 @@ test('headers.ts -> setForwardedHeaders()', () => {
 });
 
 test('headers.ts -> setRequestHeaders()', () => {
-  const request = new Request(
-    'https://httpbin.org/get',
-    {
-      headers: new Headers({
-        'cf-connecting-ip': '1.1.1.1',
-      }),
-      method: 'GET',
+  const context: Context = {
+    request: new Request(
+      'https://httpbin.org/get',
+      {
+        headers: new Headers({
+          'cf-connecting-ip': '1.1.1.1',
+        }),
+        method: 'GET',
+      },
+    ),
+    response: new Response(),
+    hostname: 'https://httpbin.org',
+    upstream: null,
+    options: {
+      upstream: {
+        domain: 'httpbin.org',
+      },
+      header: {
+        request: {
+          'X-Test': 'Test header',
+          'X-Forwarded-For': 'Test override',
+        },
+      },
     },
-  );
+  };
+  useRequestHeaders(context, () => null);
 
-  const headersRequest = setRequestHeaders(request, {
-    request: {
-      'X-Test': 'Test header',
-      'X-Forwarded-For': 'Test override',
-    },
-  });
-
-  expect(headersRequest.headers.get('X-Test')).toEqual('Test header');
-  expect(headersRequest.headers.get('X-Forwarded-For')).toEqual('Test override');
+  expect(context.request.headers.get('X-Test')).toEqual('Test header');
+  expect(context.request.headers.get('X-Forwarded-For')).toEqual('Test override');
 });
 
 test('headers.ts -> setResponseHeaders()', () => {
-  const response = new Response(
-    'https://httpbin.org/get',
-    {
-      headers: new Headers({
-        'X-Powered-By': 'Express',
-        'X-PJAX-URL': 'https://test.com/pjax',
-        'Set-Cookie': 'cookie_1=test; domain=<domain-value>; secure; samesite=strict; cookie_2=test; domain=<domain-value>; secure; httpOnly;',
-      }),
-    },
-  );
-
-  const headersResponse = setResponseHeaders(
-    response,
-    'httpbin.org',
-    {
-      response: {
-        'X-Test': 'Test header',
+  const context: Context = {
+    response: new Response(
+      'https://httpbin.org/get',
+      {
+        headers: new Headers({
+          'X-Powered-By': 'Express',
+          'X-PJAX-URL': 'https://test.com/pjax',
+          'Set-Cookie': 'cookie_1=test; domain=<domain-value>; secure; samesite=strict; cookie_2=test; domain=<domain-value>; secure; httpOnly;',
+        }),
+      },
+    ),
+    request: new Request('https://httpbin.org'),
+    hostname: 'httpbin.org',
+    upstream: null,
+    options: {
+      upstream: {
+        domain: 'httpbin.org',
+      },
+      header: {
+        response: {
+          'X-Test': 'Test header',
+        },
+      },
+      security: {
+        noSniff: true,
+        xssFilter: true,
+        hidePoweredBy: true,
+        ieNoOpen: true,
+        setCookie: true,
+        forwarded: true,
       },
     },
-    {
-      noSniff: true,
-      xssFilter: true,
-      hidePoweredBy: true,
-      ieNoOpen: true,
-      setCookie: true,
-    },
-  );
+  };
+  useResponseHeaders(context, () => null);
 
-  expect(headersResponse.headers.has('X-Powered-By')).toEqual(false);
-  expect(headersResponse.headers.get('X-Test')).toEqual('Test header');
-  expect(headersResponse.headers.get('X-XSS-Protection')).toEqual('0');
-  expect(headersResponse.headers.get('X-Content-Type-Options')).toEqual('nosniff');
-  expect(headersResponse.headers.get('X-Download-Options')).toEqual('noopen');
-  expect(headersResponse.headers.get('X-PJAX-URL')).toEqual('https://httpbin.org/pjax');
+  expect(context.response.headers.has('X-Powered-By')).toEqual(false);
+  expect(context.response.headers.get('X-Test')).toEqual('Test header');
+  expect(context.response.headers.get('X-XSS-Protection')).toEqual('0');
+  expect(context.response.headers.get('X-Content-Type-Options')).toEqual('nosniff');
+  expect(context.response.headers.get('X-Download-Options')).toEqual('noopen');
+  expect(context.response.headers.get('X-PJAX-URL')).toEqual('https://httpbin.org/pjax');
 
   const cookie = 'cookie_1=test;domain=httpbin.org;secure;samesite=strict;cookie_2=test;domain=httpbin.org;secure;httpOnly;';
-  expect(headersResponse.headers.get('Set-Cookie')).toEqual(cookie);
+  expect(context.response.headers.get('Set-Cookie')).toEqual(cookie);
 });
