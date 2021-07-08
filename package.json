@@ -6,7 +6,7 @@
   "types": "dist/index.d.js",
   "scripts": {
     "test": "jest",
-    "lint": "eslint --fix src/* --ext .ts",
+    "lint": "eslint --fix --ext .ts",
     "build": "webpack",
     "prepack": "npm run lint && npm run build"
   },

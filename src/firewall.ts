@@ -143,7 +143,7 @@ export const parseFirewallRule = (
     operator === 'not contain'
   && typeof fieldParam === 'string'
   && typeof value === 'string'
-  && fieldParam.includes(value)
+  && !fieldParam.includes(value)
   ) {
     return createResponse(
       'You don\'t have permission to access this service.',
